@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>$(StandardTargetFramework)-windows</TargetFramework>
+        <UseWindowsForms>true</UseWindowsForms>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Zenith.NET.DirectX12" />
+        <PackageReference Include="Zenith.NET.Views.WinForms" />
+        <PackageReference Include="Zenith.NET.Vulkan" />
+    </ItemGroup>
+
+</Project>

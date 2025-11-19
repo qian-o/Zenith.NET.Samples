@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>$(StandardTargetFramework)-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+        <PackageReference Include="Zenith.NET.DirectX12" />
+        <PackageReference Include="Zenith.NET.Extensions.Slang" />
+        <PackageReference Include="Zenith.NET.Views.WPF" />
+        <PackageReference Include="Zenith.NET.Vulkan" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Shaders\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

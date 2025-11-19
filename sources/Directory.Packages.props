@@ -1,0 +1,28 @@
+﻿<Project>
+
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageVersion Include="Avalonia" Version="11.3.9" />
+        <PackageVersion Include="Avalonia.Desktop" Version="11.3.9" />
+        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.9" />
+        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.9" />
+        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.9" />
+        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.10" />
+        <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.10" />
+        <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+        <PackageVersion Include="Roslynator.Analyzers" Version="4.14.1" />
+        <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Metal" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Views.Avalonia" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Views.Maui" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Views.WinForms" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Views.WPF" Version="0.0.1" />
+        <PackageVersion Include="Zenith.NET.Vulkan" Version="0.0.1" />
+    </ItemGroup>
+
+</Project>

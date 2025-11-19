@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="sources/Directory.Build.props" />
+    <File Path="sources/Directory.Packages.props" />
+  </Folder>
+  <Project Path="sources/Sample.Avalonia/Sample.Avalonia.csproj" />
+  <Project Path="sources/Sample.Maui/Sample.Maui.csproj" />
+  <Project Path="sources/Sample.WinForms/Sample.WinForms.csproj" />
+  <Project Path="sources/Sample.WPF/Sample.WPF.csproj" />
+</Solution>
