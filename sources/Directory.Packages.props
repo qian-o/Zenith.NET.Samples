@@ -16,14 +16,6 @@
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageVersion Include="Roslynator.Analyzers" Version="4.14.1" />
         <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.8.2" />
-        <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Metal" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Views.Avalonia" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Views.Maui" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Views.WinForms" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Views.WPF" Version="0.0.1" />
-        <PackageVersion Include="Zenith.NET.Vulkan" Version="0.0.1" />
     </ItemGroup>
 
 </Project>

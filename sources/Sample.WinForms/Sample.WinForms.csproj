@@ -7,9 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Zenith.NET.DirectX12" />
-        <PackageReference Include="Zenith.NET.Views.WinForms" />
-        <PackageReference Include="Zenith.NET.Vulkan" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinForms\Zenith.NET.Views.WinForms.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Metal\Zenith.NET.Metal.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
     </ItemGroup>
 
 </Project>

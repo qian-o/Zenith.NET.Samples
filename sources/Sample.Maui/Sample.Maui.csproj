@@ -13,9 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" />
-        <PackageReference Include="Microsoft.Maui.Essentials" />
-        <PackageReference Include="Zenith.NET.Views.Maui" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Maui\Zenith.NET.Views.Maui.csproj" />
     </ItemGroup>
 
     <Choose>
@@ -25,7 +23,7 @@
             </PropertyGroup>
 
             <ItemGroup>
-                <PackageReference Include="Zenith.NET.Vulkan" />
+                <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
             </ItemGroup>
         </When>
         <When Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
@@ -34,7 +32,7 @@
             </PropertyGroup>
 
             <ItemGroup>
-                <PackageReference Include="Zenith.NET.Metal" />
+                <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Metal\Zenith.NET.Metal.csproj" />
             </ItemGroup>
         </When>
         <When Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
@@ -43,7 +41,7 @@
             </PropertyGroup>
 
             <ItemGroup>
-                <PackageReference Include="Zenith.NET.Metal" />
+                <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Metal\Zenith.NET.Metal.csproj" />
             </ItemGroup>
         </When>
         <When Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
@@ -54,10 +52,15 @@
             </PropertyGroup>
 
             <ItemGroup>
-                <PackageReference Include="Zenith.NET.DirectX12" />
+                <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
             </ItemGroup>
         </When>
     </Choose>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Controls" />
+        <PackageReference Include="Microsoft.Maui.Essentials" />
+    </ItemGroup>
 
     <ItemGroup>
         <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />

@@ -9,6 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Extensions\Zenith.NET.Extensions.Slang\Zenith.NET.Extensions.Slang.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Avalonia\Zenith.NET.Views.Avalonia.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Metal\Zenith.NET.Metal.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Avalonia" />
         <PackageReference Include="Avalonia.Desktop" />
         <PackageReference Include="Avalonia.Diagnostics" />
@@ -16,11 +24,6 @@
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Xaml.Behaviors.Avalonia" />
-        <PackageReference Include="Zenith.NET.DirectX12" />
-        <PackageReference Include="Zenith.NET.Extensions.Slang" />
-        <PackageReference Include="Zenith.NET.Metal" />
-        <PackageReference Include="Zenith.NET.Views.Avalonia" />
-        <PackageReference Include="Zenith.NET.Vulkan" />
     </ItemGroup>
 
     <ItemGroup>
