@@ -14,10 +14,19 @@
         <PackageReference Include="Avalonia.Diagnostics" />
         <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Xaml.Behaviors.Avalonia" />
         <PackageReference Include="Zenith.NET.DirectX12" />
+        <PackageReference Include="Zenith.NET.Extensions.Slang" />
         <PackageReference Include="Zenith.NET.Metal" />
         <PackageReference Include="Zenith.NET.Views.Avalonia" />
         <PackageReference Include="Zenith.NET.Vulkan" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Shaders\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>
