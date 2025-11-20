@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="using:Sample.Maui"
              xmlns:sample="clr-namespace:Sample;assembly=Sample"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewmodels="using:Sample.Maui.ViewModels"
              xmlns:zenith="clr-namespace:Zenith.NET.Views.Maui;assembly=Zenith.NET.Views.Maui"
              Title="MainView">
@@ -12,7 +13,12 @@
     </ContentPage.BindingContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}" />
+        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}">
+            <zenith:ZenithView.Behaviors>
+                <toolkit:EventToCommandBehavior Command="{Binding RenderCommand}"
+                                                EventName="RenderRequested" />
+            </zenith:ZenithView.Behaviors>
+        </zenith:ZenithView>
 
         <Picker Margin="10"
                 HorizontalOptions="End"

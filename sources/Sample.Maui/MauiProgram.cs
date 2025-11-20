@@ -1,4 +1,5 @@
-﻿using Zenith.NET.Views.Maui;
+﻿using CommunityToolkit.Maui;
+using Zenith.NET.Views.Maui;
 
 namespace Sample.Maui;
 
@@ -8,8 +9,9 @@ public static class MauiProgram
     {
         return MauiApp.CreateBuilder()
                       .UseMauiApp<App>()
-                      .ConfigureFonts(Configure)
+                      .UseMauiCommunityToolkit()
                       .UseZenithView()
+                      .ConfigureFonts(Configure)
                       .Build();
     }
 
