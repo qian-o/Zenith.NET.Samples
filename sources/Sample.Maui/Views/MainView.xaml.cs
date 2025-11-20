@@ -4,9 +4,9 @@ namespace Sample.Maui.Views;
 
 public partial class MainView : ContentPage
 {
-	public MainView()
-	{
-		InitializeComponent();
+    public MainView()
+    {
+        InitializeComponent();
 
         SizeChanged += (_, _) =>
         {
