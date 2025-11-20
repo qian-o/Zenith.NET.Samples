@@ -36,16 +36,16 @@ public static unsafe class Renderer
 
         float[] vertices =
         [
-            -1f, -1f, 0f, 0f,
-             1f, -1f, 1f, 0f,
-             1f,  1f, 1f, 1f,
-            -1f,  1f, 0f, 1f,
+            -1.0f, -1.0f, 0.0f, 0.0f,
+             1.0f, -1.0f, 1.0f, 0.0f,
+             1.0f,  1.0f, 1.0f, 1.0f,
+            -1.0f,  1.0f, 0.0f, 1.0f
         ];
 
         uint[] indices =
         [
             0, 1, 2,
-            2, 3, 0,
+            2, 3, 0
         ];
 
         vertexsBuffer = Context.CreateBuffer(new()
