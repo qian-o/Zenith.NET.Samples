@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Sample.WPF"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:sample="clr-namespace:Sample;assembly=Sample"
-      xmlns:vm="clr-namespace:Sample.WPF.ViewModels"
+      xmlns:viewmodels="clr-namespace:Sample.WPF.ViewModels"
       xmlns:zenith="clr-namespace:Zenith.NET.Views.WPF;assembly=Zenith.NET.Views.WPF"
       Title="MainView"
       d:DesignHeight="450"
@@ -14,7 +14,7 @@
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <vm:MainViewModel />
+        <viewmodels:MainViewModel />
     </Page.DataContext>
 
     <Grid>

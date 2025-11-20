@@ -2,18 +2,18 @@
 			 xmlns="https://github.com/avaloniaui"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:local="clr-namespace:Sample.Avalonia"
+			 xmlns:local="using:Sample.Avalonia"
+			 xmlns:sample="using:Sample"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:sample="clr-namespace:Sample;assembly=Sample"
-			 xmlns:vm="clr-namespace:Sample.Avalonia.ViewModels"
+			 xmlns:viewmodels="using:Sample.Avalonia.ViewModels"
 			 xmlns:zenith="using:Zenith.NET.Views.Avalonia"
 			 d:DesignHeight="450"
 			 d:DesignWidth="800"
-			 x:DataType="vm:MainViewModel"
+			 x:DataType="viewmodels:MainViewModel"
 			 mc:Ignorable="d">
 
 	<UserControl.DataContext>
-		<vm:MainViewModel />
+		<viewmodels:MainViewModel />
 	</UserControl.DataContext>
 
 	<Grid>
@@ -26,11 +26,11 @@
 			</Interaction.Behaviors>
 		</zenith:ZenithView>
 
-        <ComboBox Margin="10"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Top"
-                  ItemsSource="{x:Static sample:Renderer.Samples}"
-                  SelectedItem="{Binding Sample}" />
+		<ComboBox Margin="10"
+				  HorizontalAlignment="Right"
+				  VerticalAlignment="Top"
+				  ItemsSource="{x:Static sample:Renderer.Samples}"
+				  SelectedItem="{Binding Sample}" />
 	</Grid>
 
 </UserControl>

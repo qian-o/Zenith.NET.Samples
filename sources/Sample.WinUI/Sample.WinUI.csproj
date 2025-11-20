@@ -6,6 +6,7 @@
         <UseWinUI>true</UseWinUI>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <EnableMsixTooling>true</EnableMsixTooling>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
         <PackageReference Include="Microsoft.WindowsAppSDK" />

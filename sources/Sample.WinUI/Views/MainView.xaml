@@ -1,0 +1,30 @@
+﻿<Page x:Class="Sample.WinUI.Views.MainView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:b="using:Microsoft.Xaml.Interactivity"
+      xmlns:local="using:Sample.WinUI"
+      xmlns:sample="using:Sample"
+      xmlns:viewmodels="using:Sample.WinUI.ViewModels"
+      xmlns:zenith="using:Zenith.NET.Views.WinUI">
+
+    <Page.DataContext>
+        <viewmodels:MainViewModel />
+    </Page.DataContext>
+
+    <Grid>
+        <zenith:ZenithView GraphicsContext="{x:Bind local:App.Context}">
+            <b:Interaction.Behaviors>
+                <b:EventTriggerBehavior EventName="RenderRequested">
+                    <b:InvokeCommandAction Command="{Binding RenderCommand}" />
+                </b:EventTriggerBehavior>
+            </b:Interaction.Behaviors>
+        </zenith:ZenithView>
+
+        <ComboBox Margin="10"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  ItemsSource="{x:Bind sample:Renderer.Samples}"
+                  SelectedItem="{Binding Sample}" />
+    </Grid>
+
+</Page>
