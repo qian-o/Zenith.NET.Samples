@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Zenith.NET;
+using Zenith.NET.Views.Avalonia;
 using Zenith.NET.Vulkan;
 
 namespace Sample.Avalonia;
@@ -12,6 +13,8 @@ public partial class App : Application
     {
         Context = GraphicsContext.CreateVulkan(true);
         Context.ValidationMessage += static (sender, args) => Console.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+
+        Renderer.Initialize(Context, ZenithView.Output);
     }
 
     public static GraphicsContext Context { get; }
