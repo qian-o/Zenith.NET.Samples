@@ -4,9 +4,9 @@ using Buffer = Zenith.NET.Buffer;
 
 namespace Sample;
 
-public unsafe static class Renderer
+public static unsafe class Renderer
 {
-    private readonly static Dictionary<string, GraphicsPipeline> pipelines = [];
+    private static readonly Dictionary<string, GraphicsPipeline> pipelines = [];
 
     private static Buffer vertexsBuffer = null!;
     private static Buffer indicesBuffer = null!;
@@ -74,7 +74,7 @@ public unsafe static class Renderer
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
         resourceSet = Context.CreateResourceSet(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
 
-        foreach (var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Shaders")))
+        foreach (string file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Shaders")))
         {
             if (file.EndsWith(".slang"))
             {
