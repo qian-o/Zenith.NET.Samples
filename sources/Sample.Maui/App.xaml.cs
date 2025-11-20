@@ -1,14 +1,42 @@
-﻿namespace Sample.Maui;
+﻿using System.Diagnostics;
+using Sample.Maui.Views;
+using Zenith.NET;
+using Zenith.NET.Views.Maui;
+#if ANDROID
+using Zenith.NET.Vulkan;
+#elif IOS || MACCATALYST
+using Zenith.NET.Metal;
+#else
+using Zenith.NET.Vulkan;
+#endif
+
+namespace Sample.Maui;
 
 public partial class App : Application
 {
+    static App()
+    {
+#if ANDROID
+        Context = GraphicsContext.CreateVulkan(true);
+#elif IOS || MACCATALYST
+        Context = GraphicsContext.CreateMetal(true);
+#else
+        Context = GraphicsContext.CreateVulkan(true);
+#endif
+        Context.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+
+        Renderer.Initialize(Context, ZenithView.Output);
+    }
+
     public App()
     {
         InitializeComponent();
     }
 
+    public static GraphicsContext Context { get; }
+
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new(new AppShell());
+        return new(new MainView());
     }
 }

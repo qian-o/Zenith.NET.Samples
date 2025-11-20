@@ -1,0 +1,24 @@
+﻿<ContentPage x:Class="Sample.Maui.Views.MainView"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="using:Sample.Maui"
+             xmlns:sample="clr-namespace:Sample;assembly=Sample"
+             xmlns:viewmodels="using:Sample.Maui.ViewModels"
+             xmlns:zenith="clr-namespace:Zenith.NET.Views.Maui;assembly=Zenith.NET.Views.Maui"
+             Title="MainView">
+
+    <ContentPage.BindingContext>
+        <viewmodels:MainViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}" />
+
+        <Picker Margin="10"
+                HorizontalOptions="End"
+                ItemsSource="{x:Static sample:Renderer.Samples}"
+                SelectedItem="{Binding Sample}"
+                VerticalOptions="Start" />
+    </Grid>
+
+</ContentPage>

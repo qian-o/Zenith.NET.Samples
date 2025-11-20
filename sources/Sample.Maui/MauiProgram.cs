@@ -1,4 +1,6 @@
-﻿namespace Sample.Maui;
+﻿using Zenith.NET.Views.Maui;
+
+namespace Sample.Maui;
 
 public static class MauiProgram
 {
@@ -7,6 +9,7 @@ public static class MauiProgram
         return MauiApp.CreateBuilder()
                       .UseMauiApp<App>()
                       .ConfigureFonts(Configure)
+                      .UseZenithView()
                       .Build();
     }
 

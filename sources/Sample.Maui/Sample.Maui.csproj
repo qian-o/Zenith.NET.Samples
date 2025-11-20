@@ -10,10 +10,12 @@
         <ApplicationId>com.zenith.sample.maui</ApplicationId>
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
         <ApplicationVersion>1</ApplicationVersion>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Maui\Zenith.NET.Views.Maui.csproj" />
+        <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
     <Choose>
@@ -52,12 +54,14 @@
             </PropertyGroup>
 
             <ItemGroup>
+                <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
                 <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
             </ItemGroup>
         </When>
     </Choose>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Maui.Controls" />
         <PackageReference Include="Microsoft.Maui.Essentials" />
     </ItemGroup>
