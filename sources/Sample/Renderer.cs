@@ -16,7 +16,7 @@ public unsafe static class Renderer
 
     public static GraphicsContext? Context { get; private set; }
 
-    public static string[] Samples => pipelines.Keys.ToArray();
+    public static string[] Samples => [.. pipelines.Keys];
 
     public static void Initialize(GraphicsContext context, Output output)
     {
