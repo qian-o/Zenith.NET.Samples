@@ -1,11 +1,11 @@
-<Solution>
+﻿<Solution>
   <Folder Name="/Solution Items/">
     <File Path="sources/Directory.Build.props" />
     <File Path="sources/Directory.Packages.props" />
   </Folder>
   <Project Path="sources/Sample.Avalonia/Sample.Avalonia.csproj" />
   <Project Path="sources/Sample.Maui/Sample.Maui.csproj" />
-  <Project Path="sources/Sample.Uno/Sample.Uno.csproj" Id="ed800149-591c-43be-9aef-3a45fca92ec4" />
+  <Project Path="sources/Sample.Uno/Sample.Uno.csproj" />
   <Project Path="sources/Sample.WinForms/Sample.WinForms.csproj" />
   <Project Path="sources/Sample.WinUI/Sample.WinUI.csproj" />
   <Project Path="sources/Sample.WPF/Sample.WPF.csproj" />
