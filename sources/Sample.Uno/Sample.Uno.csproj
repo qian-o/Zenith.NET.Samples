@@ -1,0 +1,23 @@
+﻿<Project Sdk="Uno.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>$(StandardTargetFramework)-desktop</TargetFramework>
+        <UnoSingleProject>true</UnoSingleProject>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinUI\Zenith.NET.Views.WinUI.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Metal\Zenith.NET.Metal.csproj" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
+        <ProjectReference Include="..\Sample\Sample.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="CommunityToolkit.WinUI.Behaviors" />
+    </ItemGroup>
+
+</Project>
