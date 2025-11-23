@@ -12,16 +12,21 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
-        zenithView.GraphicsContext = GraphicsContext.CreateVulkan(true);
+        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateVulkan(true), ZenithView.Output);
+
         zenithView.GraphicsContext.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
-
-        Renderer.Initialize(zenithView.GraphicsContext, ZenithView.Output);
-
         zenithView.RenderRequested += OnRenderRequested;
+
+        comboBox.Items.AddRange(Renderer.Samples);
     }
 
     private void OnRenderRequested(object? sender, RenderEventArgs e)
     {
-        Renderer.Render(Renderer.Samples[0], new() { Resolution = new(zenithView.ClientSize.Width, zenithView.ClientSize.Height), TotalTime = (float)e.TotalTime }, e.FrameBuffer);
+        if (comboBox.SelectedIndex < 0)
+        {
+            comboBox.SelectedIndex = 0;
+        }
+
+        Renderer.Render(Renderer.Samples[comboBox.SelectedIndex], new() { Resolution = new(zenithView.ClientSize.Width, zenithView.ClientSize.Height), TotalTime = (float)e.TotalTime }, e.FrameBuffer);
     }
 }

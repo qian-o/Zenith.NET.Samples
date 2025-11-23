@@ -29,6 +29,7 @@ partial class Form1
     private void InitializeComponent()
     {
         zenithView = new Zenith.NET.Views.WinForms.ZenithView();
+        comboBox = new ComboBox();
         SuspendLayout();
         // 
         // zenithView
@@ -39,11 +40,22 @@ partial class Form1
         zenithView.Size = new Size(1484, 850);
         zenithView.TabIndex = 0;
         // 
+        // comboBox
+        // 
+        comboBox.Dock = DockStyle.Right;
+        comboBox.FormattingEnabled = true;
+        comboBox.Location = new Point(1364, 0);
+        comboBox.Margin = new Padding(0);
+        comboBox.Name = "comboBox";
+        comboBox.Size = new Size(120, 32);
+        comboBox.TabIndex = 1;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new SizeF(11F, 24F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(1484, 850);
+        Controls.Add(comboBox);
         Controls.Add(zenithView);
         Name = "Form1";
         Text = "Form1";
@@ -53,4 +65,5 @@ partial class Form1
     #endregion
 
     private Zenith.NET.Views.WinForms.ZenithView zenithView;
+    private ComboBox comboBox;
 }
