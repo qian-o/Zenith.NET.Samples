@@ -28,11 +28,29 @@ partial class Form1
     /// </summary>
     private void InitializeComponent()
     {
-        components = new System.ComponentModel.Container();
+        zenithView = new Zenith.NET.Views.WinForms.ZenithView();
+        SuspendLayout();
+        // 
+        // zenithView
+        // 
+        zenithView.Dock = DockStyle.Fill;
+        zenithView.Location = new Point(0, 0);
+        zenithView.Name = "zenithView";
+        zenithView.Size = new Size(1484, 850);
+        zenithView.TabIndex = 0;
+        // 
+        // Form1
+        // 
+        AutoScaleDimensions = new SizeF(11F, 24F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(800, 450);
+        ClientSize = new Size(1484, 850);
+        Controls.Add(zenithView);
+        Name = "Form1";
         Text = "Form1";
+        ResumeLayout(false);
     }
 
     #endregion
+
+    private Zenith.NET.Views.WinForms.ZenithView zenithView;
 }
