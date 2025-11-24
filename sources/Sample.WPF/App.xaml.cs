@@ -18,4 +18,3 @@ public partial class App : Application
 
     public static GraphicsContext Context { get; }
 }
-

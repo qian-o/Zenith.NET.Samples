@@ -12,4 +12,3 @@ public partial class App : MauiWinUIApplication
         return MauiProgram.CreateMauiApp();
     }
 }
-
