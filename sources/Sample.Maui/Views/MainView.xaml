@@ -5,7 +5,9 @@
              xmlns:sample="clr-namespace:Sample;assembly=Sample"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:viewmodels="using:Sample.Maui.ViewModels"
-             xmlns:zenith="clr-namespace:Zenith.NET.Views.Maui;assembly=Zenith.NET.Views.Maui"
+             xmlns:zenith="clr-namespace:Zenith.NET.Views;assembly=Zenith.NET.Views"
+             xmlns:zenithmaui="clr-namespace:Zenith.NET.Views.Maui;assembly=Zenith.NET.Views.Maui"
+             x:Name="Page"
              Title="MainView">
 
     <ContentPage.BindingContext>
@@ -13,12 +15,15 @@
     </ContentPage.BindingContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}">
-            <zenith:ZenithView.Behaviors>
-                <toolkit:EventToCommandBehavior Command="{Binding RenderCommand}"
+        <zenithmaui:ZenithView GraphicsContext="{x:Static local:App.Context}">
+            <zenithmaui:ZenithView.Behaviors>
+                <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel "
+                                                x:TypeArguments="zenith:RenderEventArgs"
+                                                BindingContext="{Binding BindingContext, Source={x:Reference Page}}"
+                                                Command="{Binding RenderCommand}"
                                                 EventName="RenderRequested" />
-            </zenith:ZenithView.Behaviors>
-        </zenith:ZenithView>
+            </zenithmaui:ZenithView.Behaviors>
+        </zenithmaui:ZenithView>
 
         <Picker Margin="10"
                 HorizontalOptions="End"
