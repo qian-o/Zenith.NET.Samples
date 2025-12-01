@@ -6,5 +6,5 @@ public struct Constants
 {
     public Vector2 Resolution;
 
-    public float TotalTime;
+    public float TotalSeconds;
 }

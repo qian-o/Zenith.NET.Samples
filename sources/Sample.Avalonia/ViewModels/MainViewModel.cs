@@ -20,7 +20,7 @@ public partial class MainViewModel : ObservableRecipient
     {
         if (!string.IsNullOrEmpty(Sample))
         {
-            Renderer.Render(Sample, new() { Resolution = new((float)ActualWidth, (float)ActualHeight), TotalTime = (float)args.TotalTime }, args.FrameBuffer);
+            Renderer.Render(Sample, new() { Resolution = new((float)ActualWidth, (float)ActualHeight), TotalSeconds = (float)args.TotalSeconds }, args.FrameBuffer);
         }
     }
 }
