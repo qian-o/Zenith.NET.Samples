@@ -18,7 +18,11 @@ public static unsafe class Renderer
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(GraphicsContext context, Output output, bool useCacheShaders, Func<string, string[]>? getFiles = null, Func<string, byte[]>? readAllBytes = null)
+    public static void Initialize(GraphicsContext context,
+                                  Output output,
+                                  bool useCacheShaders = false,
+                                  Func<string, string[]>? getFiles = null,
+                                  Func<string, byte[]>? readAllBytes = null)
     {
         getFiles ??= path => Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, path));
         readAllBytes ??= File.ReadAllBytes;

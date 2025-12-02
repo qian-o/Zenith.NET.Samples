@@ -15,7 +15,7 @@ public class App : Application
         Context = GraphicsContext.CreateVulkan(true);
         Context.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
 
-        Renderer.Initialize(Context, ZenithView.Output, false);
+        Renderer.Initialize(Context, ZenithView.Output);
     }
 
     public static GraphicsContext Context { get; }
