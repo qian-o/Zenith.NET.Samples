@@ -76,4 +76,10 @@
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
+    <ItemGroup>
+        <MauiAsset Include="..\Sample\Shaders\**\*" LogicalName="Shaders\%(RecursiveDir)%(Filename)%(Extension)">
+            <Link>Shaders\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </MauiAsset>
+    </ItemGroup>
+
 </Project>

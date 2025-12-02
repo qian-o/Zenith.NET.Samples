@@ -18,8 +18,11 @@ public static unsafe class Renderer
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(GraphicsContext context, Output output, bool useCacheShaders)
+    public static void Initialize(GraphicsContext context, Output output, bool useCacheShaders, Func<string, string[]>? getFiles = null, Func<string, byte[]>? readAllBytes = null)
     {
+        getFiles ??= path => Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, path));
+        readAllBytes ??= File.ReadAllBytes;
+
         foreach (GraphicsPipeline pipeline in pipelines.Values)
         {
             pipeline.Dispose();
@@ -74,11 +77,11 @@ public static unsafe class Renderer
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
         resourceSet = Context.CreateResourceSet(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
 
-        foreach (string file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, "Shaders")))
+        foreach (string file in getFiles("Shaders"))
         {
             if (file.EndsWith(".slang"))
             {
-                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, file, useCacheShaders);
+                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, file, useCacheShaders, readAllBytes);
             }
         }
     }
@@ -107,15 +110,15 @@ public static unsafe class Renderer
         Context.Graphics.WaitIdle();
     }
 
-    private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders)
+    private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders, Func<string, byte[]> readAllBytes)
     {
         if (Context is null)
         {
             throw new InvalidOperationException("Renderer is not initialized.");
         }
 
-        Shader vs = Context.LoadShaderFromFile(file, "VSMain", ShaderStageFlags.Vertex);
-        Shader ps = Context.LoadShaderFromFile(file, "PSMain", ShaderStageFlags.Pixel);
+        Shader? vs = null;
+        Shader? ps = null;
 
         try
         {
@@ -123,14 +126,14 @@ public static unsafe class Renderer
             {
                 vs = Context.CreateShader(new()
                 {
-                    ShaderBytes = File.ReadAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}")),
+                    ShaderBytes = readAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}")),
                     EntryPoint = "VSMain",
                     Stage = ShaderStageFlags.Vertex
                 });
 
                 ps = Context.CreateShader(new()
                 {
-                    ShaderBytes = File.ReadAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}")),
+                    ShaderBytes = readAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}")),
                     EntryPoint = "PSMain",
                     Stage = ShaderStageFlags.Pixel
                 });
@@ -166,8 +169,8 @@ public static unsafe class Renderer
         }
         finally
         {
-            vs.Dispose();
-            ps.Dispose();
+            vs?.Dispose();
+            ps?.Dispose();
         }
     }
 }

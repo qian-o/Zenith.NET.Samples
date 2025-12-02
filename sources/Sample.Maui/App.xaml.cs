@@ -25,7 +25,7 @@ public partial class App : Application
 #endif
         Context.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
 
-        Renderer.Initialize(Context, ZenithView.Output, true);
+        Renderer.Initialize(Context, ZenithView.Output, true, MauiDirectory.GetFiles, MauiFile.ReadAllBytes);
     }
 
     public App()
@@ -39,4 +39,65 @@ public partial class App : Application
     {
         return new(new MainView());
     }
+}
+
+public static class MauiDirectory
+{
+#if ANDROID
+    public static string[] GetFiles(string path)
+    {
+        Android.Content.Res.AssetManager manager = Android.App.Application.Context.Assets ?? throw new InvalidOperationException("Assets not available.");
+
+        List<string> files = [];
+
+        foreach (string name in manager.List(path) ?? [])
+        {
+            string childPath = Path.Combine(path, name);
+
+            if (FileSystem.AppPackageFileExistsAsync(childPath).Result)
+            {
+                files.Add(childPath);
+            }
+        }
+
+        return [.. files];
+    }
+#elif IOS || MACCATALYST
+    public static string[] GetFiles(string path)
+    {
+        throw new NotImplementedException();
+    }
+#else
+    public static string[] GetFiles(string path)
+    {
+        return Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, path));
+    }
+#endif
+}
+
+public static class MauiFile
+{
+#if ANDROID
+    public static byte[] ReadAllBytes(string path)
+    {
+        Android.Content.Res.AssetManager manager = Android.App.Application.Context.Assets ?? throw new InvalidOperationException("Assets not available.");
+
+        using Stream stream = manager.Open(path);
+
+        using MemoryStream memoryStream = new();
+        stream.CopyTo(memoryStream);
+
+        return memoryStream.ToArray();
+    }
+#elif IOS || MACCATALYST
+    public static byte[] ReadAllBytes(string path)
+    {
+        throw new NotImplementedException();
+    }
+#else
+    public static byte[] ReadAllBytes(string path)
+    {
+        return File.ReadAllBytes(path);
+    }
+#endif
 }
