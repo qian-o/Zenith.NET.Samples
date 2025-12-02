@@ -25,7 +25,7 @@ public partial class App : Application
 #endif
         Context.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
 
-        Renderer.Initialize(Context, ZenithView.Output);
+        Renderer.Initialize(Context, ZenithView.Output, true);
     }
 
     public App()

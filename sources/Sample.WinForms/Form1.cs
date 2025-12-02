@@ -12,7 +12,7 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
-        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateVulkan(true), ZenithView.Output);
+        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateVulkan(true), ZenithView.Output, false);
 
         zenithView.GraphicsContext.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
         zenithView.RenderRequested += OnRenderRequested;

@@ -18,7 +18,7 @@ public static unsafe class Renderer
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(GraphicsContext context, Output output)
+    public static void Initialize(GraphicsContext context, Output output, bool useCacheShaders)
     {
         foreach (GraphicsPipeline pipeline in pipelines.Values)
         {
@@ -78,7 +78,7 @@ public static unsafe class Renderer
         {
             if (file.EndsWith(".slang"))
             {
-                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, file);
+                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, file, useCacheShaders);
             }
         }
     }
@@ -107,34 +107,67 @@ public static unsafe class Renderer
         Context.Graphics.WaitIdle();
     }
 
-    private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file)
+    private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders)
     {
         if (Context is null)
         {
             throw new InvalidOperationException("Renderer is not initialized.");
         }
 
-        using Shader vs = Context.LoadShaderFromFile(file, "VSMain", ShaderStageFlags.Vertex);
-        using Shader ps = Context.LoadShaderFromFile(file, "PSMain", ShaderStageFlags.Pixel);
+        Shader vs = Context.LoadShaderFromFile(file, "VSMain", ShaderStageFlags.Vertex);
+        Shader ps = Context.LoadShaderFromFile(file, "PSMain", ShaderStageFlags.Pixel);
 
-        InputLayout inputLayout = new();
-        inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
-        inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.TexCoord });
-
-        return Context.CreateGraphicsPipeline(new()
+        try
         {
-            RenderStates = new()
+            if (useCacheShaders)
             {
-                RasterizerState = RasterizerStates.Default,
-                DepthStencilState = DepthStencilStates.Default,
-                BlendState = BlendStates.Default
-            },
-            Vertex = vs,
-            Pixel = ps,
-            ResourceLayouts = [resourceLayout],
-            InputLayouts = [inputLayout],
-            PrimitiveTopology = PrimitiveTopology.TriangleList,
-            Output = output
-        });
+                vs = Context.CreateShader(new()
+                {
+                    ShaderBytes = File.ReadAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}")),
+                    EntryPoint = "VSMain",
+                    Stage = ShaderStageFlags.Vertex
+                });
+
+                ps = Context.CreateShader(new()
+                {
+                    ShaderBytes = File.ReadAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}")),
+                    EntryPoint = "PSMain",
+                    Stage = ShaderStageFlags.Pixel
+                });
+            }
+            else
+            {
+                vs = Context.LoadShaderFromFile(file, "VSMain", ShaderStageFlags.Vertex);
+                ps = Context.LoadShaderFromFile(file, "PSMain", ShaderStageFlags.Pixel);
+
+                File.WriteAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}"), vs.Desc.ShaderBytes);
+                File.WriteAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}"), ps.Desc.ShaderBytes);
+            }
+
+            InputLayout inputLayout = new();
+            inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
+            inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.TexCoord });
+
+            return Context.CreateGraphicsPipeline(new()
+            {
+                RenderStates = new()
+                {
+                    RasterizerState = RasterizerStates.Default,
+                    DepthStencilState = DepthStencilStates.Default,
+                    BlendState = BlendStates.Default
+                },
+                Vertex = vs,
+                Pixel = ps,
+                ResourceLayouts = [resourceLayout],
+                InputLayouts = [inputLayout],
+                PrimitiveTopology = PrimitiveTopology.TriangleList,
+                Output = output
+            });
+        }
+        finally
+        {
+            vs.Dispose();
+            ps.Dispose();
+        }
     }
 }
