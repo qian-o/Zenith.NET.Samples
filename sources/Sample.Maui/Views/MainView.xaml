@@ -14,7 +14,7 @@
         <viewmodels:MainViewModel />
     </ContentPage.BindingContext>
 
-    <Grid>
+    <Grid SafeAreaEdges="None">
         <zenithmaui:ZenithView GraphicsContext="{x:Static local:App.Context}">
             <zenithmaui:ZenithView.Behaviors>
                 <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel "
