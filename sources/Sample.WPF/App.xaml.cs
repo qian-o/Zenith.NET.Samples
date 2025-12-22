@@ -17,4 +17,13 @@ public partial class App : Application
     }
 
     public static GraphicsContext Context { get; }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        Renderer.Shutdown();
+
+        Context.Dispose();
+
+        base.OnExit(e);
+    }
 }

@@ -114,6 +114,23 @@ public static unsafe class Renderer
         Context.Graphics.WaitIdle();
     }
 
+    public static void Shutdown()
+    {
+        foreach (GraphicsPipeline pipeline in pipelines.Values)
+        {
+            pipeline.Dispose();
+        }
+        pipelines.Clear();
+
+        resourceSet?.Dispose();
+        resourceLayout?.Dispose();
+        constantsBuffer?.Dispose();
+        vertexsBuffer?.Dispose();
+        indicesBuffer?.Dispose();
+
+        Context = null;
+    }
+
     private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders, Func<string, byte[]> readAllBytes)
     {
         if (Context is null)
