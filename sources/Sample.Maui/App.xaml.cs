@@ -8,7 +8,7 @@ using Zenith.NET.Vulkan;
 #elif IOS || MACCATALYST
 using Zenith.NET.Metal;
 #else
-using Zenith.NET.Vulkan;
+using Zenith.NET.DirectX12;
 #endif
 
 namespace Sample.Maui;
@@ -22,7 +22,7 @@ public partial class App : Application
 #elif IOS || MACCATALYST
         Context = GraphicsContext.CreateMetal(true);
 #else
-        Context = GraphicsContext.CreateVulkan(true);
+        Context = GraphicsContext.CreateDirectX12(true);
 #endif
         Context.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
 

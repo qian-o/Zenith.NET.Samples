@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using Zenith.NET;
+using Zenith.NET.DirectX12;
 using Zenith.NET.Views;
 using Zenith.NET.Views.WinForms;
-using Zenith.NET.Vulkan;
 
 namespace Sample.WinForms;
 
@@ -12,7 +12,7 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
-        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateVulkan(true), ZenithView.Output);
+        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateDirectX12(true), ZenithView.Output);
 
         zenithView.GraphicsContext.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
         zenithView.RenderRequested += OnRenderRequested;
