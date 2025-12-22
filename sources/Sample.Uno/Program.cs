@@ -1,23 +1,36 @@
 ﻿using Microsoft.Extensions.Logging;
-using Sample.Uno;
 using Uno.Extensions;
 using Uno.UI.Adapter.Microsoft.Extensions.Logging;
 using Uno.UI.Hosting;
+using Zenith.NET.Views.WinUI;
 
-LogExtensionPoint.AmbientLoggerFactory = LoggerFactory.Create(builder =>
+namespace Sample.Uno;
+
+internal static class Program
 {
-    builder.AddConsole();
+    [STAThread]
+    public static void Main()
+    {
+        Renderer.Initialize(ZenithView.Output);
 
-    builder.SetMinimumLevel(LogLevel.Information);
-});
+        LogExtensionPoint.AmbientLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
 
-LoggingAdapter.Initialize();
+            builder.SetMinimumLevel(LogLevel.Information);
+        });
 
-UnoPlatformHost host = UnoPlatformHostBuilder.Create()
-                                             .App(() => new App())
-                                             .UseX11()
-                                             .UseMacOS()
-                                             .UseWin32()
-                                             .Build();
+        LoggingAdapter.Initialize();
 
-host.Run();
+        UnoPlatformHost host = UnoPlatformHostBuilder.Create()
+                                                     .App(() => new App())
+                                                     .UseX11()
+                                                     .UseMacOS()
+                                                     .UseWin32()
+                                                     .Build();
+
+        host.Run();
+
+        Renderer.Shutdown();
+    }
+}

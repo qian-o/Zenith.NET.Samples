@@ -1,5 +1,4 @@
 ﻿using Zenith.NET.Views;
-using Zenith.NET.Views.WinForms;
 
 namespace Sample.WinForms;
 
@@ -9,11 +8,8 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
-        Renderer.Initialize(ZenithView.Output);
-
         zenithView.GraphicsContext = Renderer.Context;
         zenithView.RenderRequested += OnRenderRequested;
-        zenithView.Disposed += static (_, _) => Renderer.Shutdown();
 
         comboBox.Items.AddRange(Renderer.Samples);
     }
