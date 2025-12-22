@@ -1,7 +1,4 @@
-﻿using System.Diagnostics;
-using Zenith.NET;
-using Zenith.NET.DirectX12;
-using Zenith.NET.Views;
+﻿using Zenith.NET.Views;
 using Zenith.NET.Views.WinForms;
 
 namespace Sample.WinForms;
@@ -12,10 +9,11 @@ public partial class Form1 : Form
     {
         InitializeComponent();
 
-        Renderer.Initialize(zenithView.GraphicsContext = GraphicsContext.CreateDirectX12(true), ZenithView.Output);
+        Renderer.Initialize(ZenithView.Output);
 
-        zenithView.GraphicsContext.ValidationMessage += static (sender, args) => Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+        zenithView.GraphicsContext = Renderer.Context;
         zenithView.RenderRequested += OnRenderRequested;
+        zenithView.Disposed += static (_, _) => Renderer.Shutdown();
 
         comboBox.Items.AddRange(Renderer.Samples);
     }

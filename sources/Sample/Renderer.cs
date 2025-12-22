@@ -1,5 +1,9 @@
-﻿using Zenith.NET;
+﻿using System.Diagnostics;
+using Zenith.NET;
+using Zenith.NET.DirectX12;
 using Zenith.NET.Extensions.Slang;
+using Zenith.NET.Metal;
+using Zenith.NET.Vulkan;
 using Buffer = Zenith.NET.Buffer;
 
 namespace Sample;
@@ -14,12 +18,39 @@ public static unsafe class Renderer
     private static ResourceLayout resourceLayout = null!;
     private static ResourceSet resourceSet = null!;
 
-    public static GraphicsContext? Context { get; private set; }
+    public static GraphicsContext Context
+    {
+        get
+        {
+            if (field is null)
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    field = GraphicsContext.CreateDirectX12(true);
+                }
+                else if (OperatingSystem.IsMacOS())
+                {
+                    field = GraphicsContext.CreateMetal(true);
+                }
+                else
+                {
+                    field = GraphicsContext.CreateVulkan(true);
+                }
+
+                field.ValidationMessage += static (sender, args) =>
+                {
+                    Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+                    Console.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+                };
+            }
+
+            return field;
+        }
+    }
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(GraphicsContext context,
-                                  Output output,
+    public static void Initialize(Output output,
                                   bool useCacheShaders = false,
                                   Func<string, string[]>? getFiles = null,
                                   Func<string, byte[]>? readAllBytes = null)
@@ -38,8 +69,6 @@ public static unsafe class Renderer
         constantsBuffer?.Dispose();
         vertexsBuffer?.Dispose();
         indicesBuffer?.Dispose();
-
-        Context = context;
 
         float[] vertices =
         [
@@ -92,11 +121,6 @@ public static unsafe class Renderer
 
     public static void Render(string sample, Constants constants, FrameBuffer frameBuffer)
     {
-        if (Context is null)
-        {
-            throw new InvalidOperationException("Renderer is not initialized.");
-        }
-
         constantsBuffer.Upload([constants], 0);
 
         CommandBuffer commandBuffer = Context.Graphics.CommandBuffer();
@@ -128,16 +152,11 @@ public static unsafe class Renderer
         vertexsBuffer?.Dispose();
         indicesBuffer?.Dispose();
 
-        Context = null;
+        Context.Dispose();
     }
 
     private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders, Func<string, byte[]> readAllBytes)
     {
-        if (Context is null)
-        {
-            throw new InvalidOperationException("Renderer is not initialized.");
-        }
-
         Shader? vs = null;
         Shader? ps = null;
 

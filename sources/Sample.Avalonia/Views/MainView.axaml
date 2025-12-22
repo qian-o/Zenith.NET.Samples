@@ -2,9 +2,8 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="using:Sample.Avalonia"
-             xmlns:sample="using:Sample"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sample="using:Sample"
              xmlns:viewmodels="using:Sample.Avalonia.ViewModels"
              xmlns:zenith="using:Zenith.NET.Views.Avalonia"
              d:DesignHeight="450"
@@ -17,7 +16,7 @@
     </UserControl.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}">
+        <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
             <Interaction.Behaviors>
                 <EventTrigger EventName="RenderRequested">
                     <InvokeCommandAction Command="{Binding RenderCommand}"

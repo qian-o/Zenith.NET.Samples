@@ -11,8 +11,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinUI\Zenith.NET.Views.WinUI.csproj" />
-        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.DirectX12\Zenith.NET.DirectX12.csproj" />
-        <ProjectReference Include="..\..\..\Zenith.NET\sources\Zenith.NET.Vulkan\Zenith.NET.Vulkan.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 

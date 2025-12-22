@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:Sample.WPF"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:sample="clr-namespace:Sample;assembly=Sample"
       xmlns:viewmodels="clr-namespace:Sample.WPF.ViewModels"
@@ -18,7 +17,7 @@
     </Page.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static local:App.Context}">
+        <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
             <b:Interaction.Triggers>
                 <b:EventTrigger EventName="RenderRequested">
                     <b:InvokeCommandAction Command="{Binding RenderCommand}"

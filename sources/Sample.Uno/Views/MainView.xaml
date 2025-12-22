@@ -2,7 +2,6 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:i="using:Microsoft.Xaml.Interactivity"
-      xmlns:local="using:Sample.Uno"
       xmlns:sample="using:Sample"
       xmlns:viewmodels="using:Sample.Uno.ViewModels"
       xmlns:zenith="using:Zenith.NET.Views.WinUI">
@@ -12,7 +11,7 @@
     </Page.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Bind local:App.Context}">
+        <zenith:ZenithView GraphicsContext="{x:Bind sample:Renderer.Context}">
             <i:Interaction.Behaviors>
                 <i:EventTriggerBehavior EventName="RenderRequested">
                     <i:InvokeCommandAction Command="{Binding RenderCommand}" />
