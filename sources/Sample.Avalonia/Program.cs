@@ -12,7 +12,7 @@ internal static class Program
 
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
-        Renderer.Shutdown();
+        Renderer.Destroy();
     }
 
     public static AppBuilder BuildAvaloniaApp()

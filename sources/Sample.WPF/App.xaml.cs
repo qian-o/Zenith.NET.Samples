@@ -9,6 +9,6 @@ public partial class App : Application
     {
         Renderer.Initialize(ZenithView.Output);
 
-        Exit += static (_, _) => Renderer.Shutdown();
+        Exit += static (_, _) => Renderer.Destroy();
     }
 }

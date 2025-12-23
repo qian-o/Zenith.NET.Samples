@@ -13,6 +13,6 @@ internal static class Program
 
         Application.Run(new Form1());
 
-        Renderer.Shutdown();
+        Renderer.Destroy();
     }
 }

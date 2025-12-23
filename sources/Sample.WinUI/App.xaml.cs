@@ -13,7 +13,7 @@ public partial class App : Application
 
         Renderer.Initialize(ZenithView.Output);
 
-        DispatcherQueue.GetForCurrentThread().ShutdownCompleted += static (_, _) => Renderer.Shutdown();
+        DispatcherQueue.GetForCurrentThread().ShutdownCompleted += static (_, _) => Renderer.Destroy();
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)

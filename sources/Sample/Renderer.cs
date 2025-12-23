@@ -132,7 +132,7 @@ public static unsafe class Renderer
         Context.Graphics.WaitIdle();
     }
 
-    public static void Shutdown()
+    public static void Destroy()
     {
         foreach (GraphicsPipeline pipeline in pipelines.Values)
         {

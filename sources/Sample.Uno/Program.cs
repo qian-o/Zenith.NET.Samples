@@ -31,6 +31,6 @@ internal static class Program
 
         host.Run();
 
-        Renderer.Shutdown();
+        Renderer.Destroy();
     }
 }
