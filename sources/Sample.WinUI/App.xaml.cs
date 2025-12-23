@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Sample.WinUI.Views;
 using Zenith.NET.Views.WinUI;
 
@@ -11,6 +12,8 @@ public partial class App : Application
         InitializeComponent();
 
         Renderer.Initialize(ZenithView.Output);
+
+        DispatcherQueue.GetForCurrentThread().ShutdownCompleted += static (_, _) => Renderer.Shutdown();
     }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)

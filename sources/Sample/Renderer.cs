@@ -18,35 +18,29 @@ public static unsafe class Renderer
     private static ResourceLayout resourceLayout = null!;
     private static ResourceSet resourceSet = null!;
 
-    public static GraphicsContext Context
+    static Renderer()
     {
-        get
+        if (OperatingSystem.IsWindows())
         {
-            if (field is null)
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    field = GraphicsContext.CreateDirectX12(true);
-                }
-                else if (OperatingSystem.IsMacOS())
-                {
-                    field = GraphicsContext.CreateMetal(true);
-                }
-                else
-                {
-                    field = GraphicsContext.CreateVulkan(true);
-                }
-
-                field.ValidationMessage += static (sender, args) =>
-                {
-                    Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
-                    Console.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
-                };
-            }
-
-            return field;
+            Context = GraphicsContext.CreateDirectX12(true);
         }
+        else if (OperatingSystem.IsMacOS())
+        {
+            Context = GraphicsContext.CreateMetal(true);
+        }
+        else
+        {
+            Context = GraphicsContext.CreateVulkan(true);
+        }
+
+        Context.ValidationMessage += static (sender, args) =>
+        {
+            Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+            Console.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+        };
     }
+
+    public static GraphicsContext Context { get; }
 
     public static string[] Samples => [.. pipelines.Keys];
 
