@@ -82,7 +82,7 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)(sizeof(float) * vertices.Length),
             StrideInBytes = sizeof(float) * 4,
-            Flags = BufferUsageFlags.Vertex
+            Flags = BufferUsageFlags.Vertex | BufferUsageFlags.CopyDestination
         });
         vertexsBuffer.Upload(vertices, 0);
 
@@ -90,7 +90,7 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)(sizeof(uint) * indices.Length),
             StrideInBytes = sizeof(uint),
-            Flags = BufferUsageFlags.Index
+            Flags = BufferUsageFlags.Index | BufferUsageFlags.CopyDestination
         });
         indicesBuffer.Upload(indices, 0);
 
@@ -98,7 +98,7 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)sizeof(Constants),
             StrideInBytes = (uint)sizeof(Constants),
-            Flags = BufferUsageFlags.Constant | BufferUsageFlags.Dynamic
+            Flags = BufferUsageFlags.Constant | BufferUsageFlags.MapWrite
         });
 
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
