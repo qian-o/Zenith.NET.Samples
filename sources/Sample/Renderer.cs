@@ -82,7 +82,7 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)(sizeof(float) * vertices.Length),
             StrideInBytes = sizeof(float) * 4,
-            Flags = BufferUsageFlags.Vertex | BufferUsageFlags.CopyDestination
+            Flags = BufferUsageFlags.Vertex
         });
         vertexsBuffer.Upload(vertices, 0);
 
@@ -90,7 +90,7 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)(sizeof(uint) * indices.Length),
             StrideInBytes = sizeof(uint),
-            Flags = BufferUsageFlags.Index | BufferUsageFlags.CopyDestination
+            Flags = BufferUsageFlags.Index
         });
         indicesBuffer.Upload(indices, 0);
 
