@@ -119,17 +119,16 @@ public static unsafe class Renderer
 
         CommandBuffer commandBuffer = Context.Graphics.CommandBuffer();
 
-        commandBuffer.BindFrameBuffer(frameBuffer, ClearValues.Default);
+        commandBuffer.SetPipeline(pipelines[sample]);
+        commandBuffer.SetVertexBuffer(vertexsBuffer, 0, 0);
+        commandBuffer.SetIndexBuffer(indicesBuffer, 0, IndexFormat.UInt32);
+        commandBuffer.SetResourceSet(resourceSet, 0);
 
-        commandBuffer.BindPipeline(pipelines[sample]);
-        commandBuffer.BindVertexBuffer(vertexsBuffer, 0, 0);
-        commandBuffer.BindIndexBuffer(indicesBuffer, 0, IndexFormat.UInt32);
-        commandBuffer.BindResourceSet(resourceSet, 0);
+        commandBuffer.BeginRenderPass(frameBuffer, ClearValues.Default, resourceSet);
         commandBuffer.DrawIndexed(6, 1, 0, 0, 0);
+        commandBuffer.EndRenderPass();
 
-        commandBuffer.Submit();
-
-        Context.Graphics.WaitIdle();
+        commandBuffer.Submit(true);
     }
 
     public static void Destroy()
