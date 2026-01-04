@@ -9,7 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Avalonia\Zenith.NET.Views.Avalonia.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
@@ -21,6 +20,7 @@
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Xaml.Behaviors.Avalonia" />
+        <PackageReference Include="Zenith.NET.Views.Avalonia" />
     </ItemGroup>
 
 </Project>

@@ -10,7 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinUI\Zenith.NET.Views.WinUI.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
@@ -19,6 +18,7 @@
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
         <PackageReference Include="Microsoft.WindowsAppSDK" />
+        <PackageReference Include="Zenith.NET.Views.WinUI" />
     </ItemGroup>
 
 </Project>
