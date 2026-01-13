@@ -11,10 +11,12 @@
     </Page.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Bind sample:Renderer.Context}">
+        <zenith:ZenithView x:Name="ZenithView"
+                           GraphicsContext="{x:Bind sample:Renderer.Context}">
             <i:Interaction.Behaviors>
-                <i:EventTriggerBehavior EventName="RenderRequested">
-                    <i:InvokeCommandAction Command="{Binding RenderCommand}" />
+                <i:EventTriggerBehavior EventName="Loaded">
+                    <i:InvokeCommandAction Command="{Binding LoadedCommand}"
+                                           CommandParameter="{x:Bind ZenithView}" />
                 </i:EventTriggerBehavior>
             </i:Interaction.Behaviors>
         </zenith:ZenithView>

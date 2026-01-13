@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Sample.WinUI.Views;
-using Zenith.NET.Views.WinUI;
+using Zenith.NET.Views;
 
 namespace Sample.WinUI;
 
@@ -11,7 +11,7 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        Renderer.Initialize(ZenithView.Output);
+        Renderer.Initialize(ZenithViewOutputs.WinUI);
 
         DispatcherQueue.GetForCurrentThread().ShutdownCompleted += static (_, _) => Renderer.Destroy();
     }

@@ -8,13 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinUI\Zenith.NET.Views.WinUI.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="CommunityToolkit.WinUI.Behaviors" />
-        <PackageReference Include="Zenith.NET.Views.WinUI" />
+        <!--<PackageReference Include="Zenith.NET.Views.WinUI" />-->
     </ItemGroup>
 
 </Project>
