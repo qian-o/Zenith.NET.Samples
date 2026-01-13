@@ -1,4 +1,4 @@
-﻿using Zenith.NET.Views;
+﻿using Zenith.NET.Views.WinForms;
 
 namespace Sample.WinForms;
 
@@ -7,7 +7,7 @@ internal static class Program
     [STAThread]
     public static void Main()
     {
-        Renderer.Initialize(ZenithViewOutputs.WinForms);
+        Renderer.Initialize(ZenithView.Output);
 
         ApplicationConfiguration.Initialize();
 

@@ -16,11 +16,12 @@
     </UserControl.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
+        <zenith:ZenithView x:Name="ZenithView"
+                           GraphicsContext="{x:Static sample:Renderer.Context}">
             <Interaction.Behaviors>
-                <EventTrigger EventName="RenderRequested">
-                    <InvokeCommandAction Command="{Binding RenderCommand}"
-                                         PassEventArgsToCommand="True" />
+                <EventTrigger EventName="Loaded">
+                    <InvokeCommandAction Command="{Binding LoadedCommand}"
+                                         CommandParameter="{Binding ElementName=ZenithView}" />
                 </EventTrigger>
             </Interaction.Behaviors>
         </zenith:ZenithView>
