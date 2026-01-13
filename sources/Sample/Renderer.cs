@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Zenith.NET;
 using Zenith.NET.DirectX12;
 using Zenith.NET.Extensions.Slang;
@@ -113,8 +114,14 @@ public static unsafe class Renderer
         }
     }
 
-    public static void Render(string sample, Constants constants, FrameBuffer frameBuffer)
+    public static void Render(string sample, double totalSeconds, FrameBuffer frameBuffer)
     {
+        Constants constants = new()
+        {
+            Resolution = new(frameBuffer.Width, frameBuffer.Height),
+            TotalSeconds = (float)totalSeconds
+        };
+
         constantsBuffer.Upload([constants], 0);
 
         CommandBuffer commandBuffer = Context.Graphics.CommandBuffer();
@@ -205,5 +212,12 @@ public static unsafe class Renderer
             vs?.Dispose();
             ps?.Dispose();
         }
+    }
+
+    private struct Constants
+    {
+        public Vector2 Resolution;
+
+        public float TotalSeconds;
     }
 }

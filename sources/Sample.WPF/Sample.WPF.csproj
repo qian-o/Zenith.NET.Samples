@@ -7,13 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WPF\Zenith.NET.Views.WPF.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
-        <PackageReference Include="Zenith.NET.Views.WPF" />
+        <!--<PackageReference Include="Zenith.NET.Views.WPF" />-->
     </ItemGroup>
 
 </Project>
