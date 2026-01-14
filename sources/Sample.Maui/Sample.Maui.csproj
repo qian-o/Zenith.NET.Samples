@@ -14,6 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Maui\Zenith.NET.Views.Maui.csproj" />
         <ProjectReference Include="..\Sample\Sample.csproj" />
     </ItemGroup>
 
@@ -50,7 +51,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Maui.Controls" />
         <PackageReference Include="Microsoft.Maui.Essentials" />
-        <PackageReference Include="Zenith.NET.Views.Maui" />
+        <!--<PackageReference Include="Zenith.NET.Views.Maui" />-->
     </ItemGroup>
 
     <ItemGroup>
