@@ -16,7 +16,7 @@
     <Grid SafeAreaEdges="None">
         <zenithmaui:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
             <zenithmaui:ZenithView.Behaviors>
-                <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel "
+                <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel"
                                                 x:TypeArguments="zenith:RenderEventArgs"
                                                 BindingContext="{Binding BindingContext, Source={x:Reference Page}}"
                                                 Command="{Binding RenderCommand}"

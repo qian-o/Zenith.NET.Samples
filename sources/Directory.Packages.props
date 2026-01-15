@@ -5,21 +5,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageVersion Include="Avalonia" Version="11.3.10" />
-        <PackageVersion Include="Avalonia.Desktop" Version="11.3.10" />
-        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.10" />
-        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.10" />
-        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.10" />
+        <PackageVersion Include="Avalonia" Version="11.3.11" />
+        <PackageVersion Include="Avalonia.Desktop" Version="11.3.11" />
+        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.11" />
+        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.11" />
+        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.11" />
         <PackageVersion Include="CommunityToolkit.Maui" Version="13.0.0" />
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
         <PackageVersion Include="CommunityToolkit.WinUI.Behaviors" Version="8.2.251219" />
         <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.20" />
         <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.20" />
         <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7463" />
-        <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+        <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260101001" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
-        <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.9.2" />
+        <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.9.3" />
         <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.3" />
         <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.3" />
         <PackageVersion Include="Zenith.NET.Metal" Version="0.0.3" />
