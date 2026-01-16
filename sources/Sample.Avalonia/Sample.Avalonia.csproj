@@ -20,7 +20,6 @@
         <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="Avalonia.Themes.Fluent" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
-        <PackageReference Include="Xaml.Behaviors.Avalonia" />
         <!--<PackageReference Include="Zenith.NET.Views.Avalonia" />-->
     </ItemGroup>
 

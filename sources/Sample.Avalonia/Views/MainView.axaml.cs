@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Sample.Avalonia.ViewModels;
+using Zenith.NET.Views;
 
 namespace Sample.Avalonia.Views;
 
@@ -8,12 +9,10 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+    }
 
-        SizeChanged += (_, _) =>
-        {
-            MainViewModel viewModel = (MainViewModel)DataContext!;
-            viewModel.ActualWidth = Bounds.Width;
-            viewModel.ActualHeight = Bounds.Height;
-        };
+    private void OnRenderRequested(object sender, RenderEventArgs e)
+    {
+        ((MainViewModel)DataContext!).OnRenderRequested(e);
     }
 }
