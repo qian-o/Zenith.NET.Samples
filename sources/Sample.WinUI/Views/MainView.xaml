@@ -1,31 +1,18 @@
 ﻿<Page x:Class="Sample.WinUI.Views.MainView"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:i="using:Microsoft.Xaml.Interactivity"
       xmlns:sample="using:Sample"
-      xmlns:viewmodels="using:Sample.WinUI.ViewModels"
       xmlns:zenith="using:Zenith.NET.Views.WinUI">
 
-    <Page.DataContext>
-        <viewmodels:MainViewModel />
-    </Page.DataContext>
-
     <Grid>
-        <zenith:ZenithView x:Name="ZenithView"
-                           GraphicsContext="{x:Bind sample:Renderer.Context}">
-            <i:Interaction.Behaviors>
-                <i:EventTriggerBehavior EventName="Loaded">
-                    <i:InvokeCommandAction Command="{Binding LoadedCommand}"
-                                           CommandParameter="{x:Bind ZenithView}" />
-                </i:EventTriggerBehavior>
-            </i:Interaction.Behaviors>
-        </zenith:ZenithView>
+        <zenith:ZenithView GraphicsContext="{x:Bind sample:Renderer.Context}"
+                           RenderRequested="{x:Bind ViewModel.OnRenderRequested}" />
 
         <ComboBox Margin="10"
                   HorizontalAlignment="Right"
                   VerticalAlignment="Top"
                   ItemsSource="{x:Bind sample:Renderer.Samples}"
-                  SelectedItem="{Binding Sample}" />
+                  SelectedItem="{x:Bind ViewModel.Sample}" />
     </Grid>
 
 </Page>
