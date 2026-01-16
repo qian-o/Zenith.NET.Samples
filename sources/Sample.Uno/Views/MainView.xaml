@@ -6,7 +6,7 @@
 
     <Grid>
         <zenith:ZenithView GraphicsContext="{x:Bind sample:Renderer.Context}"
-                           RenderRequested="{x:Bind ViewModel.OnRenderRequested}" />
+                           RenderRequested="{x:Bind ViewModel.RenderRequested}" />
 
         <ComboBox Margin="10"
                   HorizontalAlignment="Right"

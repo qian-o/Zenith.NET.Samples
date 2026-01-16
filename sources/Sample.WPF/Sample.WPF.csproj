@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
         <!--<PackageReference Include="Zenith.NET.Views.WPF" />-->
     </ItemGroup>
 

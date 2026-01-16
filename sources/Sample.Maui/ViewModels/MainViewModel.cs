@@ -10,7 +10,7 @@ public partial class MainViewModel : ObservableRecipient
     public partial string Sample { get; set; } = Renderer.Samples.FirstOrDefault() ?? string.Empty;
 
     [RelayCommand]
-    private void Render(RenderEventArgs args)
+    private void RenderRequested(RenderEventArgs args)
     {
         if (!string.IsNullOrEmpty(Sample))
         {

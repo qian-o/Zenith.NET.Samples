@@ -49,7 +49,6 @@ partial class Form1
         comboBox.Name = "comboBox";
         comboBox.Size = new Size(120, 32);
         comboBox.TabIndex = 1;
-        comboBox.SelectedIndexChanged += OnSelectedIndexChanged;
         // 
         // Form1
         // 

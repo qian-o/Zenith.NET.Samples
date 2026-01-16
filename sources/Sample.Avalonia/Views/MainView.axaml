@@ -16,8 +16,14 @@
     </UserControl.DataContext>
 
     <Grid>
-        <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}"
-                           RenderRequested="OnRenderRequested" />
+        <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
+            <Interaction.Behaviors>
+                <EventTrigger EventName="RenderRequested">
+                    <InvokeCommandAction Command="{Binding RenderRequestedCommand}"
+                                         PassEventArgsToCommand="True" />
+                </EventTrigger>
+            </Interaction.Behaviors>
+        </zenith:ZenithView>
 
         <ComboBox Margin="10"
                   HorizontalAlignment="Right"

@@ -19,7 +19,7 @@
                 <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel"
                                                 x:TypeArguments="zenith:RenderEventArgs"
                                                 BindingContext="{Binding BindingContext, Source={x:Reference Page}}"
-                                                Command="{Binding RenderCommand}"
+                                                Command="{Binding RenderRequestedCommand}"
                                                 EventName="RenderRequested" />
             </zenithmaui:ZenithView.Behaviors>
         </zenithmaui:ZenithView>

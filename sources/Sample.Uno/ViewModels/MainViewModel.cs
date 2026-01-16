@@ -8,7 +8,7 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     private string sample = Renderer.Samples.FirstOrDefault() ?? string.Empty;
 
-    public void OnRenderRequested(object? sender, RenderEventArgs e)
+    public void RenderRequested(object? sender, RenderEventArgs e)
     {
         if (!string.IsNullOrEmpty(Sample))
         {
