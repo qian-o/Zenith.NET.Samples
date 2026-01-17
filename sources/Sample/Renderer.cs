@@ -45,14 +45,8 @@ public static unsafe class Renderer
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(Output output,
-                                  bool useCacheShaders = false,
-                                  Func<string, string[]>? getFiles = null,
-                                  Func<string, byte[]>? readAllBytes = null)
+    public static void Initialize(Output output)
     {
-        getFiles ??= path => Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, path));
-        readAllBytes ??= File.ReadAllBytes;
-
         foreach (GraphicsPipeline pipeline in pipelines.Values)
         {
             pipeline.Dispose();
@@ -105,11 +99,13 @@ public static unsafe class Renderer
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
         resourceSet = Context.CreateResourceSet(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
 
-        foreach (string file in getFiles("Shaders"))
+        using Shader vs = GetShader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain", ShaderStageFlags.Vertex);
+
+        foreach (string file in FileAccessService.GetFiles("Shaders"))
         {
             if (file.EndsWith(".slang"))
             {
-                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, file, useCacheShaders, readAllBytes);
+                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, vs, file);
             }
         }
     }
@@ -155,62 +151,49 @@ public static unsafe class Renderer
         Context.Dispose();
     }
 
-    private static GraphicsPipeline CreateGraphicsPipeline(Output output, string file, bool useCacheShaders, Func<string, byte[]> readAllBytes)
+    private static GraphicsPipeline CreateGraphicsPipeline(Output output, Shader vs, string file)
     {
-        Shader? vs = null;
-        Shader? ps = null;
+        using Shader ps = GetShader(file, "PSMain", ShaderStageFlags.Pixel);
 
-        try
+        InputLayout inputLayout = new();
+        inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
+        inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.TexCoord });
+
+        return Context.CreateGraphicsPipeline(new()
         {
-            if (useCacheShaders)
+            RenderStates = new()
             {
-                vs = Context.CreateShader(new()
-                {
-                    ShaderBytes = readAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}")),
-                    EntryPoint = "VSMain",
-                    Stage = ShaderStageFlags.Vertex
-                });
+                RasterizerState = RasterizerStates.Default,
+                DepthStencilState = DepthStencilStates.Default,
+                BlendState = BlendStates.Default
+            },
+            Vertex = vs,
+            Pixel = ps,
+            ResourceLayouts = [resourceLayout],
+            InputLayouts = [inputLayout],
+            PrimitiveTopology = PrimitiveTopology.TriangleList,
+            Output = output
+        });
+    }
 
-                ps = Context.CreateShader(new()
-                {
-                    ShaderBytes = readAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}")),
-                    EntryPoint = "PSMain",
-                    Stage = ShaderStageFlags.Pixel
-                });
-            }
-            else
+    private static Shader GetShader(string file, string entryPoint, ShaderStageFlags stage)
+    {
+        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+        {
+            return Context.CreateShader(new()
             {
-                vs = Context.LoadShaderFromFile(file, "VSMain", ShaderStageFlags.Vertex);
-                ps = Context.LoadShaderFromFile(file, "PSMain", ShaderStageFlags.Pixel);
-
-                File.WriteAllBytes(Path.ChangeExtension(file, $".vs_{Context.Backend.ToString().ToLower()}"), vs.Desc.ShaderBytes);
-                File.WriteAllBytes(Path.ChangeExtension(file, $".ps_{Context.Backend.ToString().ToLower()}"), ps.Desc.ShaderBytes);
-            }
-
-            InputLayout inputLayout = new();
-            inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
-            inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.TexCoord });
-
-            return Context.CreateGraphicsPipeline(new()
-            {
-                RenderStates = new()
-                {
-                    RasterizerState = RasterizerStates.Default,
-                    DepthStencilState = DepthStencilStates.Default,
-                    BlendState = BlendStates.Default
-                },
-                Vertex = vs,
-                Pixel = ps,
-                ResourceLayouts = [resourceLayout],
-                InputLayouts = [inputLayout],
-                PrimitiveTopology = PrimitiveTopology.TriangleList,
-                Output = output
+                ShaderBytes = FileAccessService.ReadAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}")),
+                EntryPoint = entryPoint,
+                Stage = stage
             });
         }
-        finally
+        else
         {
-            vs?.Dispose();
-            ps?.Dispose();
+            Shader shader = Context.LoadShaderFromFile(file, entryPoint, stage);
+
+            File.WriteAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}"), shader.Desc.ShaderBytes);
+
+            return shader;
         }
     }
 

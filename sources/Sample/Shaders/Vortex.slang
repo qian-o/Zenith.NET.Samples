@@ -8,11 +8,6 @@ float mod(float x, float y)
     return x - y * floor(x / y);
 }
 
-Vertex VSMain(float2 position: POSITION0, float2 uv: TEXCOORD0)
-{
-    return Vertex(float4(position, 0.0, 1.0), uv);
-}
-
 /*
     "Vortex" by @XorDev
 

@@ -1,5 +1,4 @@
-﻿using Sample.Maui.Helpers;
-using Sample.Maui.Views;
+﻿using Sample.Maui.Views;
 using Zenith.NET.Views.Maui;
 
 namespace Sample.Maui;
@@ -10,7 +9,7 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        Renderer.Initialize(ZenithView.Output, true, MauiAssetService.GetFiles, MauiAssetService.ReadAllBytes);
+        Renderer.Initialize(ZenithView.Output);
     }
 
     protected override Window CreateWindow(IActivationState? activationState)
