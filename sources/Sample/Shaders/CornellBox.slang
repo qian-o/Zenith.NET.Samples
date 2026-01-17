@@ -3,20 +3,12 @@ import "Common/Vertex";
 
 uniform Constants constants;
 
-// =============================================================================
-// Configuration
-// =============================================================================
-
 static const float PI = 3.14159265359;
 static const float EPSILON = 0.001;
 static const float MAX_DIST = 2000.0;
 static const int MAX_ITER = 128;
 static const float EXPOSURE = 34.0;
 static const float GAMMA = 2.1;
-
-// =============================================================================
-// Object IDs
-// =============================================================================
 
 static const float OBJ_FLOOR = 1.0;
 static const float OBJ_CEILING = 2.0;
@@ -26,10 +18,6 @@ static const float OBJ_RIGHTWALL = 5.0;
 static const float OBJ_LIGHT = 6.0;
 static const float OBJ_BLOCK = 7.0;
 static const float OBJ_SPHERE = 8.0;
-
-// =============================================================================
-// Scene Parameters
-// =============================================================================
 
 static const float3 LIGHT_COLOR = float3(16.86, 10.76, 3.7);
 static const float3 LIGHT_CENTER = float3(278.0, 548.8, 320.0);
@@ -46,20 +34,18 @@ static const float SPHERE_IOR = 1.5;
 static const float3 CAM_POS = float3(278.0, 273.0, -801.4);
 static const float3 CAM_TARGET = float3(278.0, 274.4, 279.6);
 
-// =============================================================================
-// Utility Functions
-// =============================================================================
-
 float3 rotateY(float3 p, float a)
 {
-    float c = cos(a), s = sin(a);
+    float c = cos(a);
+    float s = sin(a);
 
     return float3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z);
 }
 
 float3 rotateX(float3 p, float a)
 {
-    float c = cos(a), s = sin(a);
+    float c = cos(a);
+    float s = sin(a);
 
     return float3(p.x, c * p.y - s * p.z, s * p.y + c * p.z);
 }
@@ -78,10 +64,6 @@ float3 getLightPos(float time)
     return LIGHT_CENTER + float3(cos(angle) * LIGHT_ORBIT_RADIUS, 0.0, sin(angle) * LIGHT_ORBIT_RADIUS);
 }
 
-// =============================================================================
-// Scene SDF
-// =============================================================================
-
 float sdfBlocks(float3 p)
 {
     float shortBlock = sdBox(rotateY(p - float3(186.0, 82.5, 169.5), -0.29718), float3(83.5, 83.5, 82.5));
@@ -93,11 +75,6 @@ float sdfBlocks(float3 p)
 float sdfSphere(float3 p)
 {
     return length(p - SPHERE_POS) - SPHERE_RAD;
-}
-
-float sdfShadowCasters(float3 p)
-{
-    return min(sdfBlocks(p), sdfSphere(p));
 }
 
 float2 sdfScene(float3 p, bool includeGlass, float3 lightPos)
@@ -162,21 +139,21 @@ float3 calcNormal(float3 p, bool includeGlass, float3 lightPos)
                sdfScene(p + e.yyx, includeGlass, lightPos).y - sdfScene(p - e.yyx, includeGlass, lightPos).y));
 }
 
-// =============================================================================
-// Ray Marching
-// =============================================================================
-
 float2 raymarch(float3 ro, float3 rd, bool includeGlass, float3 lightPos)
 {
     float t = 0.0;
+
     for (int i = 0; i < MAX_ITER; i++)
     {
         float2 res = sdfScene(ro + rd * t, includeGlass, lightPos);
+
         if (res.y < EPSILON)
         {
             return float2(res.x, t);
         }
+
         t += res.y;
+
         if (t > MAX_DIST)
         {
             break;
@@ -186,11 +163,6 @@ float2 raymarch(float3 ro, float3 rd, bool includeGlass, float3 lightPos)
     return float2(-1.0, t);
 }
 
-// =============================================================================
-// Lighting (Sebastian Aaltonen's improved soft shadow technique)
-// =============================================================================
-
-// Soft shadow using improved technique with triangulation
 float calcSoftShadow(float3 ro, float3 rd, float mint, float tmax, float w)
 {
     float res = 1.0;
@@ -206,12 +178,11 @@ float calcSoftShadow(float3 ro, float3 rd, float mint, float tmax, float w)
             return 0.0;
         }
 
-        // Improved technique by Sebastian Aaltonen
         float y = h * h / (2.0 * ph);
         float d = sqrt(max(0.0, h * h - y * y));
+
         res = min(res, d / (w * max(0.0001, t - y)));
         ph = h;
-
         t += h;
 
         if (t > tmax)
@@ -225,7 +196,6 @@ float calcSoftShadow(float3 ro, float3 rd, float mint, float tmax, float w)
     return res * res * (3.0 - 2.0 * res);
 }
 
-// Very soft shadow for glass sphere (transparent objects cast weak caustic-like shadows)
 float calcGlassShadow(float3 ro, float3 rd, float3 sphPos, float sphRad)
 {
     float3 oc = ro - sphPos;
@@ -238,13 +208,11 @@ float calcGlassShadow(float3 ro, float3 rd, float3 sphPos, float sphRad)
         return 1.0;
     }
 
-    // Glass causes slight focusing of light (caustics approximation)
     float shadow = sqrt(h) / sphRad;
 
     return lerp(0.92, 1.0, shadow);
 }
 
-// Combined shadow
 float calcCombinedShadow(float3 ro, float3 rd, float maxDist)
 {
     float blockShadow = calcSoftShadow(ro, rd, 0.02, maxDist, 0.05);
@@ -257,10 +225,12 @@ float calcAO(float3 p, float3 n, float3 lightPos)
 {
     float occ = 0.0;
     float sca = 1.0;
+
     for (int i = 0; i < 5; i++)
     {
         float h = 2.0 + 12.0 * float(i);
         float d = sdfScene(p + n * h, false, lightPos).y;
+
         occ += (h - d) * sca / h;
         sca *= 0.75;
     }
@@ -292,9 +262,9 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
 
     float3 albedo = getMaterialColor(id);
 
-    // Light position for shading (area light approximation)
     float lightSize = 25.0;
     float3 lp = lightPos;
+
     if (id == OBJ_CEILING)
     {
         lp.y -= 550.0;
@@ -308,39 +278,30 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
     float atten = 0.5 / dist + 0.5 / (dist * dist);
     float NdotL = max(0.0, dot(n, L));
 
-    // Shadow
     float shadow = 1.0;
+
     if (id != OBJ_CEILING)
     {
         shadow = calcCombinedShadow(p + n * 0.1, L, dist);
         shadow = shadow * 0.6 + 0.4;
     }
 
-    // Direct lighting
     float3 direct = albedo * LIGHT_COLOR * NdotL * atten * shadow;
 
-    // Indirect lighting (color bleeding from walls)
     float3 indirect = float3(0.0, 0.0, 0.0);
 
-    // Green wall contribution
     float3 c2Color = LIGHT_COLOR * RIGHT_WALL_COLOR * 0.08;
     float c2Atten = 1.0 / (p.x + 1.0);
     indirect += albedo * max(0.0, -n.x) * c2Color * c2Atten;
 
-    // Red wall contribution
     float3 c3Color = LIGHT_COLOR * LEFT_WALL_COLOR * 0.08;
     float c3Atten = 1.0 / (556.0 - p.x + 1.0);
     indirect += albedo * max(0.0, n.x) * c3Color * c3Atten;
 
-    // Ambient occlusion (only for blocks, not affected by glass sphere)
     float ao = calcAO(p, n, lightPos);
 
     return (direct + indirect + albedo * 0.0006) * ao;
 }
-
-// =============================================================================
-// Glass Sphere
-// =============================================================================
 
 float fresnel(float cosTheta, float ior)
 {
@@ -356,6 +317,7 @@ bool intersectSphere(float3 ro, float3 rd, out float tNear, out float tFar)
     float b = dot(oc, rd);
     float c = dot(oc, oc) - SPHERE_RAD * SPHERE_RAD;
     float h = b * b - c;
+
     if (h < 0.0)
     {
         return false;
@@ -375,12 +337,13 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
     float cosI = max(0.0, -dot(rd, n));
     float fr = fresnel(cosI, SPHERE_IOR);
 
-    // Reflection
     float3 reflDir = reflect(rd, n);
     float2 reflHit = raymarch(p + n * 0.2, reflDir, false, lightPos);
+
     if (reflHit.x > 0.0)
     {
         float3 rp = p + n * 0.2 + reflDir * reflHit.y;
+
         if (rp.z >= 0.0)
         {
             float3 rn = calcNormal(rp, false, lightPos);
@@ -388,13 +351,13 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
         }
     }
 
-    // Refraction
     float3 refrDir = refract(rd, n, 1.0 / SPHERE_IOR);
+
     if (dot(refrDir, refrDir) > 0.01)
     {
-        // Use analytical intersection for inside sphere
         float3 startP = p - n * 0.2;
         float tNear, tFar;
+
         if (intersectSphere(startP, refrDir, tNear, tFar))
         {
             float3 exitP = startP + refrDir * max(tFar, 0.1);
@@ -404,9 +367,11 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
             if (dot(exitDir, exitDir) > 0.01)
             {
                 float2 exitHit = raymarch(exitP - exitN * 0.2, exitDir, false, lightPos);
+
                 if (exitHit.x > 0.0)
                 {
                     float3 ep = exitP - exitN * 0.2 + exitDir * exitHit.y;
+
                     if (ep.z >= 0.0)
                     {
                         float3 en = calcNormal(ep, false, lightPos);
@@ -416,12 +381,13 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
             }
             else
             {
-                // Total internal reflection fallback
                 float3 tirDir = reflect(refrDir, exitN);
                 float2 tirHit = raymarch(exitP + exitN * 0.2, tirDir, false, lightPos);
+
                 if (tirHit.x > 0.0)
                 {
                     float3 tp = exitP + exitN * 0.2 + tirDir * tirHit.y;
+
                     if (tp.z >= 0.0)
                     {
                         float3 tn = calcNormal(tp, false, lightPos);
@@ -435,19 +401,17 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
     return col;
 }
 
-// =============================================================================
-// Main Render
-// =============================================================================
-
 float3 render(float3 ro, float3 rd, float3 lightPos)
 {
     float2 hit = raymarch(ro, rd, true, lightPos);
+
     if (hit.x < 0.0)
     {
         return float3(0.0, 0.0, 0.0);
     }
 
     float3 p = ro + rd * hit.y;
+
     if (p.z < 0.0)
     {
         return float3(0.0, 0.0, 0.0);
@@ -468,7 +432,6 @@ float3 setupCamera(float3 ro, float3 rd)
     rd.x = -rd.x;
 
     float3 dir = normalize(CAM_TARGET - ro);
-
     float angY = atan2(dir.z, dir.x);
     rd = rotateY(rd, PI * 0.5 - angY);
 
@@ -477,10 +440,6 @@ float3 setupCamera(float3 ro, float3 rd)
 
     return rd;
 }
-
-// =============================================================================
-// Entry Point
-// =============================================================================
 
 float4 PSMain(Vertex input) : SV_TARGET
 {
@@ -491,7 +450,6 @@ float4 PSMain(Vertex input) : SV_TARGET
     float3 lightPos = getLightPos(time);
     float3 color = float3(0.0, 0.0, 0.0);
 
-    // 4x rotated grid anti-aliasing
     float angleStep = PI * 0.5;
     float angle = angleStep * 0.333;
 
@@ -502,13 +460,10 @@ float4 PSMain(Vertex input) : SV_TARGET
         float3 rd = setupCamera(CAM_POS, normalize(float3(uv, 0.0) - float3(0.0, 0.0, -1.4)));
 
         color += render(CAM_POS, rd, lightPos);
-
         angle += angleStep;
     }
 
     color *= 0.25;
-
-    // Tone mapping
     color *= EXPOSURE;
     color = pow(saturate(color), 1.0 / GAMMA);
 
