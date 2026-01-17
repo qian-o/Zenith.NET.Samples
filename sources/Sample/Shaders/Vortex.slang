@@ -1,4 +1,12 @@
-﻿import "Common/Constants";
+﻿/*
+    "Vortex" by @XorDev
+
+    X: X.com/XorDev/status/1726103550986469869
+    Twigl: twigl.app/?ol=true&ss=-Nj_xbLdHGKREF78Hd96
+    shadertoy: https://www.shadertoy.com/view/DlVczV
+*/
+
+import "Common/Constants";
 import "Common/Vertex";
 
 uniform Constants constants;
@@ -8,13 +16,6 @@ float mod(float x, float y)
     return x - y * floor(x / y);
 }
 
-/*
-    "Vortex" by @XorDev
-
-    X: X.com/XorDev/status/1726103550986469869
-    Twigl: twigl.app/?ol=true&ss=-Nj_xbLdHGKREF78Hd96
-    shadertoy: https://www.shadertoy.com/view/DlVczV
-*/
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float4 color = float4(0.0, 0.0, 0.0, 0.0);
