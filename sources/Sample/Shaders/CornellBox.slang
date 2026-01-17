@@ -90,7 +90,12 @@ float sdfSphere(float3 p)
     return length(p - SPHERE_POS) - SPHERE_RAD;
 }
 
-float2 sdfScene(float3 p, bool includeSphere, float3 lightPos)
+float sdfShadowCasters(float3 p)
+{
+    return min(sdfBlocks(p), sdfSphere(p));
+}
+
+float2 sdfScene(float3 p, bool includeGlass, float3 lightPos)
 {
     float2 res = float2(OBJ_FLOOR, p.y);
 
@@ -130,7 +135,7 @@ float2 sdfScene(float3 p, bool includeSphere, float3 lightPos)
         res = float2(OBJ_BLOCK, blocks);
     }
 
-    if (includeSphere)
+    if (includeGlass)
     {
         float sphere = sdfSphere(p);
         if (sphere < res.y)
@@ -142,25 +147,25 @@ float2 sdfScene(float3 p, bool includeSphere, float3 lightPos)
     return res;
 }
 
-float3 calcNormal(float3 p, bool includeSphere, float3 lightPos)
+float3 calcNormal(float3 p, bool includeGlass, float3 lightPos)
 {
     float2 e = float2(0.0002, 0.0);
     return normalize(
-        float3(sdfScene(p + e.xyy, includeSphere, lightPos).y - sdfScene(p - e.xyy, includeSphere, lightPos).y,
-               sdfScene(p + e.yxy, includeSphere, lightPos).y - sdfScene(p - e.yxy, includeSphere, lightPos).y,
-               sdfScene(p + e.yyx, includeSphere, lightPos).y - sdfScene(p - e.yyx, includeSphere, lightPos).y));
+        float3(sdfScene(p + e.xyy, includeGlass, lightPos).y - sdfScene(p - e.xyy, includeGlass, lightPos).y,
+               sdfScene(p + e.yxy, includeGlass, lightPos).y - sdfScene(p - e.yxy, includeGlass, lightPos).y,
+               sdfScene(p + e.yyx, includeGlass, lightPos).y - sdfScene(p - e.yyx, includeGlass, lightPos).y));
 }
 
 // =============================================================================
 // Ray Marching
 // =============================================================================
 
-float2 raymarch(float3 ro, float3 rd, bool includeSphere, float3 lightPos)
+float2 raymarch(float3 ro, float3 rd, bool includeGlass, float3 lightPos)
 {
     float t = 0.0;
     for (int i = 0; i < MAX_ITER; i++)
     {
-        float2 res = sdfScene(ro + rd * t, includeSphere, lightPos);
+        float2 res = sdfScene(ro + rd * t, includeGlass, lightPos);
         if (res.y < EPSILON)
         {
             return float2(res.x, t);
@@ -175,46 +180,81 @@ float2 raymarch(float3 ro, float3 rd, bool includeSphere, float3 lightPos)
 }
 
 // =============================================================================
-// Lighting
+// Lighting (Sebastian Aaltonen's improved soft shadow technique)
 // =============================================================================
 
-float calcSoftShadow(float3 ro, float3 rd, float maxDist)
+// Soft shadow using improved technique with triangulation
+float calcSoftShadow(float3 ro, float3 rd, float mint, float tmax, float w)
 {
     float res = 1.0;
-    float t = 0.5;
+    float t = mint;
     float ph = 1e10;
 
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 48; i++)
     {
         float h = sdfBlocks(ro + rd * t);
-        if (h < EPSILON)
+
+        if (h < 0.0001)
         {
             return 0.0;
         }
 
+        // Improved technique by Sebastian Aaltonen
         float y = h * h / (2.0 * ph);
-        float d = sqrt(h * h - y * y);
-        res = min(res, 8.0 * d / max(0.0, t - y));
+        float d = sqrt(max(0.0, h * h - y * y));
+        res = min(res, d / (w * max(0.0001, t - y)));
         ph = h;
 
-        t += h * 0.5;
-        if (t > maxDist)
+        t += h;
+
+        if (t > tmax)
         {
             break;
         }
     }
-    return saturate(res);
+
+    res = clamp(res, 0.0, 1.0);
+    return res * res * (3.0 - 2.0 * res);
+}
+
+// Very soft shadow for glass sphere (transparent objects cast weak caustic-like shadows)
+float calcGlassShadow(float3 ro, float3 rd, float3 sphPos, float sphRad)
+{
+    float3 oc = ro - sphPos;
+    float b = dot(oc, rd);
+    float c = dot(oc, oc) - sphRad * sphRad;
+    float h = b * b - c;
+
+    if (h < 0.0 || b > 0.0)
+    {
+        return 1.0;
+    }
+
+    // Glass causes slight focusing of light (caustics approximation)
+    float shadow = sqrt(h) / sphRad;
+    return lerp(0.92, 1.0, shadow);
+}
+
+// Combined shadow
+float calcCombinedShadow(float3 ro, float3 rd, float maxDist)
+{
+    float blockShadow = calcSoftShadow(ro, rd, 0.02, maxDist, 0.05);
+    float glassShadow = calcGlassShadow(ro, rd, SPHERE_POS, SPHERE_RAD);
+    return blockShadow * glassShadow;
 }
 
 float calcAO(float3 p, float3 n, float3 lightPos)
 {
     float occ = 0.0;
-    for (int i = 1; i <= 3; i++)
+    float sca = 1.0;
+    for (int i = 0; i < 5; i++)
     {
-        float d = 8.0 * float(i);
-        occ += (d - sdfScene(p + n * d, true, lightPos).y) / d;
+        float h = 2.0 + 12.0 * float(i);
+        float d = sdfScene(p + n * h, false, lightPos).y;
+        occ += (h - d) * sca / h;
+        sca *= 0.75;
     }
-    return saturate(1.0 - occ * 0.12);
+    return clamp(1.0 - occ * 0.25, 0.0, 1.0);
 }
 
 float3 getMaterialColor(float id)
@@ -239,14 +279,15 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
 
     float3 albedo = getMaterialColor(id);
 
-    // Area light approximation
+    // Light position for shading (area light approximation)
+    float lightSize = 25.0;
     float3 lp = lightPos;
-    lp.x = clamp(p.x, lp.x - 50.0, lp.x + 50.0);
-    lp.z = clamp(p.z, lp.z - 50.0, lp.z + 50.0);
     if (id == OBJ_CEILING)
     {
-        lp.y = 0.0;
+        lp.y -= 550.0;
     }
+    lp.x = clamp(p.x, lp.x - lightSize, lp.x + lightSize);
+    lp.y = clamp(p.y, lp.y - lightSize, lp.y + lightSize);
 
     float3 L = normalize(lp - p);
     float dist = length(lp - p);
@@ -257,31 +298,39 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
     float shadow = 1.0;
     if (id != OBJ_CEILING)
     {
-        shadow = calcSoftShadow(p + n * 1.0, L, dist);
-        shadow = shadow * 0.75 + 0.25;
+        shadow = calcCombinedShadow(p + n * 0.1, L, dist);
+        shadow = shadow * 0.6 + 0.4;
     }
 
     // Direct lighting
     float3 direct = albedo * LIGHT_COLOR * NdotL * atten * shadow;
 
-    // Indirect lighting (color bleeding)
+    // Indirect lighting (color bleeding from walls)
     float3 indirect = float3(0.0, 0.0, 0.0);
-    indirect += albedo * RIGHT_WALL_COLOR * LIGHT_COLOR * max(0.0, -n.x) * 0.06 / (p.x + 1.0);
-    indirect += albedo * LEFT_WALL_COLOR * LIGHT_COLOR * max(0.0, n.x) * 0.06 / (556.0 - p.x + 1.0);
 
-    // Ambient occlusion
+    // Green wall contribution
+    float3 c2Color = LIGHT_COLOR * RIGHT_WALL_COLOR * 0.08;
+    float c2Atten = 1.0 / (p.x + 1.0);
+    indirect += albedo * max(0.0, -n.x) * c2Color * c2Atten;
+
+    // Red wall contribution
+    float3 c3Color = LIGHT_COLOR * LEFT_WALL_COLOR * 0.08;
+    float c3Atten = 1.0 / (556.0 - p.x + 1.0);
+    indirect += albedo * max(0.0, n.x) * c3Color * c3Atten;
+
+    // Ambient occlusion (only for blocks, not affected by glass sphere)
     float ao = calcAO(p, n, lightPos);
 
-    return (direct + indirect + albedo * 0.001) * ao;
+    return (direct + indirect + albedo * 0.0006) * ao;
 }
 
 // =============================================================================
 // Glass Sphere
 // =============================================================================
 
-float fresnel(float cosTheta)
+float fresnel(float cosTheta, float ior)
 {
-    float r0 = (1.0 - SPHERE_IOR) / (1.0 + SPHERE_IOR);
+    float r0 = (1.0 - ior) / (1.0 + ior);
     r0 *= r0;
     return r0 + (1.0 - r0) * pow(1.0 - cosTheta, 5.0);
 }
@@ -307,14 +356,14 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
     float3 col = float3(0.0, 0.0, 0.0);
     float3 n = normalize(p - SPHERE_POS);
     float cosI = max(0.0, -dot(rd, n));
-    float fr = fresnel(cosI);
+    float fr = fresnel(cosI, SPHERE_IOR);
 
     // Reflection
     float3 reflDir = reflect(rd, n);
-    float2 reflHit = raymarch(p + n * 0.1, reflDir, false, lightPos);
+    float2 reflHit = raymarch(p + n * 0.2, reflDir, false, lightPos);
     if (reflHit.x > 0.0)
     {
-        float3 rp = p + n * 0.1 + reflDir * reflHit.y;
+        float3 rp = p + n * 0.2 + reflDir * reflHit.y;
         if (rp.z >= 0.0)
         {
             float3 rn = calcNormal(rp, false, lightPos);
@@ -326,23 +375,40 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
     float3 refrDir = refract(rd, n, 1.0 / SPHERE_IOR);
     if (dot(refrDir, refrDir) > 0.01)
     {
+        // Use analytical intersection for inside sphere
+        float3 startP = p - n * 0.2;
         float tNear, tFar;
-        if (intersectSphere(p + refrDir * 0.1, refrDir, tNear, tFar))
+        if (intersectSphere(startP, refrDir, tNear, tFar))
         {
-            float3 exitP = p + refrDir * (0.1 + tFar);
+            float3 exitP = startP + refrDir * max(tFar, 0.1);
             float3 exitN = -normalize(exitP - SPHERE_POS);
             float3 exitDir = refract(refrDir, exitN, SPHERE_IOR);
 
             if (dot(exitDir, exitDir) > 0.01)
             {
-                float2 exitHit = raymarch(exitP + exitN * 0.1, exitDir, false, lightPos);
+                float2 exitHit = raymarch(exitP - exitN * 0.2, exitDir, false, lightPos);
                 if (exitHit.x > 0.0)
                 {
-                    float3 ep = exitP + exitN * 0.1 + exitDir * exitHit.y;
+                    float3 ep = exitP - exitN * 0.2 + exitDir * exitHit.y;
                     if (ep.z >= 0.0)
                     {
                         float3 en = calcNormal(ep, false, lightPos);
                         col += (1.0 - fr) * shade(ep, en, exitHit.x, lightPos) * float3(0.97, 0.98, 1.0);
+                    }
+                }
+            }
+            else
+            {
+                // Total internal reflection fallback
+                float3 tirDir = reflect(refrDir, exitN);
+                float2 tirHit = raymarch(exitP + exitN * 0.2, tirDir, false, lightPos);
+                if (tirHit.x > 0.0)
+                {
+                    float3 tp = exitP + exitN * 0.2 + tirDir * tirHit.y;
+                    if (tp.z >= 0.0)
+                    {
+                        float3 tn = calcNormal(tp, false, lightPos);
+                        col += (1.0 - fr) * 0.5 * shade(tp, tn, tirHit.x, lightPos);
                     }
                 }
             }
