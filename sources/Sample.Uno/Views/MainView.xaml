@@ -12,7 +12,7 @@
                   HorizontalAlignment="Right"
                   VerticalAlignment="Top"
                   ItemsSource="{x:Bind sample:Renderer.Samples}"
-                  SelectedItem="{x:Bind ViewModel.Sample}" />
+                  SelectedItem="{x:Bind ViewModel.Sample, Mode=TwoWay}" />
     </Grid>
 
 </Page>
