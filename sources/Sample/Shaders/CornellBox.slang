@@ -53,24 +53,28 @@ static const float3 CAM_TARGET = float3(278.0, 274.4, 279.6);
 float3 rotateY(float3 p, float a)
 {
     float c = cos(a), s = sin(a);
+
     return float3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z);
 }
 
 float3 rotateX(float3 p, float a)
 {
     float c = cos(a), s = sin(a);
+
     return float3(p.x, c * p.y - s * p.z, s * p.y + c * p.z);
 }
 
 float sdBox(float3 p, float3 b)
 {
     float3 d = abs(p) - b;
+
     return min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0));
 }
 
 float3 getLightPos(float time)
 {
     float angle = time * LIGHT_ORBIT_SPEED;
+
     return LIGHT_CENTER + float3(cos(angle) * LIGHT_ORBIT_RADIUS, 0.0, sin(angle) * LIGHT_ORBIT_RADIUS);
 }
 
@@ -82,6 +86,7 @@ float sdfBlocks(float3 p)
 {
     float shortBlock = sdBox(rotateY(p - float3(186.0, 82.5, 169.5), -0.29718), float3(83.5, 83.5, 82.5));
     float tallBlock = sdBox(rotateY(p - float3(368.5, 165.0, 351.5), 0.30072), float3(87.0, 165.0, 83.5));
+
     return min(shortBlock, tallBlock);
 }
 
@@ -150,6 +155,7 @@ float2 sdfScene(float3 p, bool includeGlass, float3 lightPos)
 float3 calcNormal(float3 p, bool includeGlass, float3 lightPos)
 {
     float2 e = float2(0.0002, 0.0);
+
     return normalize(
         float3(sdfScene(p + e.xyy, includeGlass, lightPos).y - sdfScene(p - e.xyy, includeGlass, lightPos).y,
                sdfScene(p + e.yxy, includeGlass, lightPos).y - sdfScene(p - e.yxy, includeGlass, lightPos).y,
@@ -176,6 +182,7 @@ float2 raymarch(float3 ro, float3 rd, bool includeGlass, float3 lightPos)
             break;
         }
     }
+
     return float2(-1.0, t);
 }
 
@@ -214,6 +221,7 @@ float calcSoftShadow(float3 ro, float3 rd, float mint, float tmax, float w)
     }
 
     res = clamp(res, 0.0, 1.0);
+
     return res * res * (3.0 - 2.0 * res);
 }
 
@@ -232,6 +240,7 @@ float calcGlassShadow(float3 ro, float3 rd, float3 sphPos, float sphRad)
 
     // Glass causes slight focusing of light (caustics approximation)
     float shadow = sqrt(h) / sphRad;
+
     return lerp(0.92, 1.0, shadow);
 }
 
@@ -240,6 +249,7 @@ float calcCombinedShadow(float3 ro, float3 rd, float maxDist)
 {
     float blockShadow = calcSoftShadow(ro, rd, 0.02, maxDist, 0.05);
     float glassShadow = calcGlassShadow(ro, rd, SPHERE_POS, SPHERE_RAD);
+
     return blockShadow * glassShadow;
 }
 
@@ -254,6 +264,7 @@ float calcAO(float3 p, float3 n, float3 lightPos)
         occ += (h - d) * sca / h;
         sca *= 0.75;
     }
+
     return clamp(1.0 - occ * 0.25, 0.0, 1.0);
 }
 
@@ -263,10 +274,12 @@ float3 getMaterialColor(float id)
     {
         return LEFT_WALL_COLOR;
     }
+
     if (id == OBJ_RIGHTWALL)
     {
         return RIGHT_WALL_COLOR;
     }
+
     return WHITE_COLOR;
 }
 
@@ -286,6 +299,7 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
     {
         lp.y -= 550.0;
     }
+
     lp.x = clamp(p.x, lp.x - lightSize, lp.x + lightSize);
     lp.y = clamp(p.y, lp.y - lightSize, lp.y + lightSize);
 
@@ -332,6 +346,7 @@ float fresnel(float cosTheta, float ior)
 {
     float r0 = (1.0 - ior) / (1.0 + ior);
     r0 *= r0;
+
     return r0 + (1.0 - r0) * pow(1.0 - cosTheta, 5.0);
 }
 
@@ -345,9 +360,11 @@ bool intersectSphere(float3 ro, float3 rd, out float tNear, out float tFar)
     {
         return false;
     }
+
     h = sqrt(h);
     tNear = -b - h;
     tFar = -b + h;
+
     return true;
 }
 
@@ -442,17 +459,22 @@ float3 render(float3 ro, float3 rd, float3 lightPos)
     }
 
     float3 n = calcNormal(p, true, lightPos);
+
     return shade(p, n, hit.x, lightPos);
 }
 
 float3 setupCamera(float3 ro, float3 rd)
 {
     rd.x = -rd.x;
+
     float3 dir = normalize(CAM_TARGET - ro);
+
     float angY = atan2(dir.z, dir.x);
     rd = rotateY(rd, PI * 0.5 - angY);
+
     float angX = atan2(dir.y, dir.z);
     rd = rotateX(rd, -angX);
+
     return rd;
 }
 
@@ -478,9 +500,12 @@ float4 PSMain(Vertex input) : SV_TARGET
         float2 offset = float2(cos(angle), sin(angle)) * 0.4;
         float2 uv = (fragCoord + offset - resolution * 0.5) / resolution.y;
         float3 rd = setupCamera(CAM_POS, normalize(float3(uv, 0.0) - float3(0.0, 0.0, -1.4)));
+
         color += render(CAM_POS, rd, lightPos);
+
         angle += angleStep;
     }
+
     color *= 0.25;
 
     // Tone mapping
