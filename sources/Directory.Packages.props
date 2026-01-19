@@ -19,15 +19,15 @@
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
         <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.9.3" />
-        <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Metal" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Views.Avalonia" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Views.Maui" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Views.WinForms" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Views.WinUI" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Views.WPF" Version="0.0.3" />
-        <PackageVersion Include="Zenith.NET.Vulkan" Version="0.0.3" />
+        <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Metal" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Views.Avalonia" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Views.Maui" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Views.WinForms" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Views.WinUI" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Views.WPF" Version="0.0.4" />
+        <PackageVersion Include="Zenith.NET.Vulkan" Version="0.0.4" />
     </ItemGroup>
 
 </Project>
