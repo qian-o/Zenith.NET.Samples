@@ -2,7 +2,6 @@
 using Uno.Extensions;
 using Uno.UI.Adapter.Microsoft.Extensions.Logging;
 using Uno.UI.Hosting;
-using Zenith.NET.Views.WinUI;
 
 namespace Sample.Uno;
 
@@ -11,7 +10,7 @@ internal static class Program
     [STAThread]
     public static void Main()
     {
-        Renderer.Initialize(ZenithView.Output);
+        Renderer.Initialize();
 
         LogExtensionPoint.AmbientLoggerFactory = LoggerFactory.Create(builder =>
         {

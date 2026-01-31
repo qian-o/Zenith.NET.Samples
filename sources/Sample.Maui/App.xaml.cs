@@ -1,5 +1,4 @@
 ﻿using Sample.Maui.Views;
-using Zenith.NET.Views.Maui;
 
 namespace Sample.Maui;
 
@@ -9,7 +8,7 @@ public partial class App : Application
     {
         InitializeComponent();
 
-        Renderer.Initialize(ZenithView.Output);
+        Renderer.Initialize();
     }
 
     protected override Window CreateWindow(IActivationState? activationState)

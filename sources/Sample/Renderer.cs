@@ -4,6 +4,7 @@ using Zenith.NET;
 using Zenith.NET.DirectX12;
 using Zenith.NET.Extensions.Slang;
 using Zenith.NET.Metal;
+using Zenith.NET.Views;
 using Zenith.NET.Vulkan;
 using Buffer = Zenith.NET.Buffer;
 
@@ -45,7 +46,7 @@ public static unsafe class Renderer
 
     public static string[] Samples => [.. pipelines.Keys];
 
-    public static void Initialize(Output output)
+    public static void Initialize()
     {
         foreach (GraphicsPipeline pipeline in pipelines.Values)
         {
@@ -105,7 +106,7 @@ public static unsafe class Renderer
         {
             if (file.EndsWith(".slang"))
             {
-                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(output, vs, file);
+                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(vs, file);
             }
         }
     }
@@ -151,7 +152,7 @@ public static unsafe class Renderer
         Context.Dispose();
     }
 
-    private static GraphicsPipeline CreateGraphicsPipeline(Output output, Shader vs, string file)
+    private static GraphicsPipeline CreateGraphicsPipeline(Shader vs, string file)
     {
         using Shader ps = GetShader(file, "PSMain", ShaderStageFlags.Pixel);
 
@@ -172,7 +173,7 @@ public static unsafe class Renderer
             ResourceLayouts = [resourceLayout],
             InputLayouts = [inputLayout],
             PrimitiveTopology = PrimitiveTopology.TriangleList,
-            Output = output
+            Output = ZenithViewHelper.Output
         });
     }
 
@@ -196,11 +197,11 @@ public static unsafe class Renderer
             return shader;
         }
     }
+}
 
-    private struct Constants
-    {
-        public Vector2 Resolution;
+file struct Constants
+{
+    public Vector2 Resolution;
 
-        public float TotalSeconds;
-    }
+    public float TotalSeconds;
 }
