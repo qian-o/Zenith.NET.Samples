@@ -30,7 +30,7 @@ internal static class FileAccessService
 
         return [.. files];
 #elif IOS || MACCATALYST
-        throw new NotImplementedException();
+        return Directory.GetFiles(Path.Combine(NSBundle.MainBundle.ResourcePath, path));
 #else
         return Directory.GetFiles(Path.Combine(AppContext.BaseDirectory, path));
 #endif
@@ -48,7 +48,7 @@ internal static class FileAccessService
 
         return memoryStream.ToArray();
 #elif IOS || MACCATALYST
-        throw new NotImplementedException();
+        return File.ReadAllBytes(Path.Combine(NSBundle.MainBundle.ResourcePath, path));
 #else
         return File.ReadAllBytes(path);
 #endif

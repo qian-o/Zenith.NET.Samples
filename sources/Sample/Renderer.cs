@@ -25,7 +25,7 @@ public static unsafe class Renderer
         {
             Context = GraphicsContext.CreateDirectX12(true);
         }
-        else if (OperatingSystem.IsMacOS())
+        else if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
         {
             Context = GraphicsContext.CreateMetal(true);
         }
@@ -178,7 +178,7 @@ public static unsafe class Renderer
 
     private static Shader GetShader(string file, string entryPoint, ShaderStageFlags stage)
     {
-        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS())
+        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
         {
             return Context.CreateShader(new()
             {
