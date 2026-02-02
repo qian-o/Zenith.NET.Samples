@@ -50,7 +50,6 @@
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Microsoft.Maui.Controls" />
         <PackageReference Include="Microsoft.Maui.Essentials" />
-        <PackageReference Include="SharpMetal" />
         <PackageReference Include="Zenith.NET.Views.Maui" />
     </ItemGroup>
 
