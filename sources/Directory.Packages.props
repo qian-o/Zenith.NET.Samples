@@ -18,6 +18,7 @@
         <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260101001" />
         <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
+        <PackageVersion Include="SharpMetal" Version="1.1.0" />
         <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.9.3" />
         <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.5" />
         <PackageVersion Include="Zenith.NET.Extensions.Slang" Version="0.0.5" />
