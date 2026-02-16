@@ -18,7 +18,7 @@ public static unsafe class Renderer
     private static Buffer indicesBuffer = null!;
     private static Buffer constantsBuffer = null!;
     private static ResourceLayout resourceLayout = null!;
-    private static ResourceSet resourceSet = null!;
+    private static ResourceTable resourceTable = null!;
 
     static Renderer()
     {
@@ -54,7 +54,7 @@ public static unsafe class Renderer
         }
         pipelines.Clear();
 
-        resourceSet?.Dispose();
+        resourceTable?.Dispose();
         resourceLayout?.Dispose();
         constantsBuffer?.Dispose();
         vertexsBuffer?.Dispose();
@@ -98,7 +98,7 @@ public static unsafe class Renderer
         });
 
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
-        resourceSet = Context.CreateResourceSet(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
+        resourceTable = Context.CreateResourceTable(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
 
         using Shader vs = GetShader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain", ShaderStageFlags.Vertex);
 
@@ -126,9 +126,9 @@ public static unsafe class Renderer
         commandBuffer.SetPipeline(pipelines[sample]);
         commandBuffer.SetVertexBuffer(vertexsBuffer, 0, 0);
         commandBuffer.SetIndexBuffer(indicesBuffer, 0, IndexFormat.UInt32);
-        commandBuffer.SetResourceSet(resourceSet, 0);
+        commandBuffer.SetResourceTable(resourceTable);
 
-        commandBuffer.BeginRenderPass(frameBuffer, ClearValues.Default, resourceSet);
+        commandBuffer.BeginRenderPass(frameBuffer, ClearValues.Default, resourceTable);
         commandBuffer.DrawIndexed(6, 1, 0, 0, 0);
         commandBuffer.EndRenderPass();
 
@@ -143,7 +143,7 @@ public static unsafe class Renderer
         }
         pipelines.Clear();
 
-        resourceSet?.Dispose();
+        resourceTable?.Dispose();
         resourceLayout?.Dispose();
         constantsBuffer?.Dispose();
         vertexsBuffer?.Dispose();
@@ -170,7 +170,7 @@ public static unsafe class Renderer
             },
             Vertex = vs,
             Pixel = ps,
-            ResourceLayouts = [resourceLayout],
+            ResourceLayout = resourceLayout,
             InputLayouts = [inputLayout],
             PrimitiveTopology = PrimitiveTopology.TriangleList,
             Output = ZenithViewHelper.Output
