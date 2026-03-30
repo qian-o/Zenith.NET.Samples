@@ -5,18 +5,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageVersion Include="Avalonia" Version="11.3.12" />
-        <PackageVersion Include="Avalonia.Desktop" Version="11.3.12" />
-        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.12" />
-        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.12" />
-        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.12" />
-        <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.0" />
-        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.40" />
-        <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.40" />
+        <PackageVersion Include="Avalonia" Version="11.3.13" />
+        <PackageVersion Include="Avalonia.Desktop" Version="11.3.13" />
+        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.13" />
+        <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.13" />
+        <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.13" />
+        <PackageVersion Include="CommunityToolkit.Maui" Version="14.0.1" />
+        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+        <PackageVersion Include="Microsoft.Maui.Controls" Version="10.0.51" />
+        <PackageVersion Include="Microsoft.Maui.Essentials" Version="10.0.51" />
         <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
-        <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
-        <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+        <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+        <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
         <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
         <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="11.3.9.5" />
         <PackageVersion Include="Zenith.NET.DirectX12" Version="0.0.6" />
