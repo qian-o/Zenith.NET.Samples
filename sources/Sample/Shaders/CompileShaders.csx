@@ -1,13 +1,7 @@
-﻿// Usage: dotnet script CompileShaders.csx
-// Recommended when DirectX12 initialization is inconsistent:
-//   dotnet script --no-cache CompileShaders.csx
-// Or run from the Shaders directory directly.
-//
-// Prerequisites:
+﻿// Install:
 //   dotnet tool install -g dotnet-script
-//
-// This script compiles all .slang shaders to DirectX12, Vulkan, and Metal formats
-// using the Zenith.NET.Extensions.Slang extension.
+// Run:
+//   dotnet script --no-cache CompileShaders.csx
 
 #r "nuget: Zenith.NET.DirectX12, 0.0.7"
 #r "nuget: Zenith.NET.Vulkan, 0.0.7"
@@ -59,10 +53,9 @@ foreach (var (name, extension, factory) in backends)
     {
         context = factory();
     }
-    catch (Exception ex)
+    catch
     {
         Console.WriteLine($"[{name}] Skipped - backend not available on this platform.");
-        Console.WriteLine(ex);
         Console.WriteLine();
 
         continue;
@@ -94,9 +87,9 @@ foreach (var (name, extension, factory) in backends)
 
                 Console.WriteLine($"  [{name}] {fileName} -> {Path.GetFileName(psOutput)}");
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine($"  [{name}] {fileName} FAILED: {ex.Message}");
+                Console.WriteLine($"  [{name}] {fileName} FAILED.");
             }
         }
     }
