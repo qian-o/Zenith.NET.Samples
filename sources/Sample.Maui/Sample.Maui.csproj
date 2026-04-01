@@ -26,13 +26,13 @@
 
         <When Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
             <PropertyGroup>
-                <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+                <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
             </PropertyGroup>
         </When>
 
         <When Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
             <PropertyGroup>
-                <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+                <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
             </PropertyGroup>
         </When>
 
