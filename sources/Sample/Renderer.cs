@@ -2,7 +2,6 @@
 using System.Numerics;
 using Zenith.NET;
 using Zenith.NET.DirectX12;
-using Zenith.NET.Extensions.Slang;
 using Zenith.NET.Metal;
 using Zenith.NET.Views;
 using Zenith.NET.Vulkan;
@@ -100,7 +99,7 @@ public static unsafe class Renderer
         resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
         resourceTable = Context.CreateResourceTable(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
 
-        using Shader vs = GetShader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain", ShaderStageFlags.Vertex);
+        using Shader vs = Shader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain", ShaderStageFlags.Vertex);
 
         foreach (string file in FileAccessService.GetFiles("Shaders"))
         {
@@ -154,7 +153,7 @@ public static unsafe class Renderer
 
     private static GraphicsPipeline CreateGraphicsPipeline(Shader vs, string file)
     {
-        using Shader ps = GetShader(file, "PSMain", ShaderStageFlags.Pixel);
+        using Shader ps = Shader(file, "PSMain", ShaderStageFlags.Pixel);
 
         InputLayout inputLayout = new();
         inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
@@ -177,25 +176,14 @@ public static unsafe class Renderer
         });
     }
 
-    private static Shader GetShader(string file, string entryPoint, ShaderStageFlags stage)
+    private static Shader Shader(string file, string entryPoint, ShaderStageFlags stage)
     {
-        if (OperatingSystem.IsAndroid() || OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
+        return Context.CreateShader(new()
         {
-            return Context.CreateShader(new()
-            {
-                ShaderBytes = FileAccessService.ReadAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}")),
-                EntryPoint = entryPoint,
-                Stage = stage
-            });
-        }
-        else
-        {
-            Shader shader = Context.LoadShaderFromFile(file, entryPoint, stage);
-
-            File.WriteAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}"), shader.Desc.ShaderBytes);
-
-            return shader;
-        }
+            ShaderBytes = FileAccessService.ReadAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}")),
+            EntryPoint = entryPoint,
+            Stage = stage
+        });
     }
 }
 

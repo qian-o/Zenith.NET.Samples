@@ -12,7 +12,6 @@
 
     <ItemGroup>
         <PackageReference Include="Zenith.NET.DirectX12" />
-        <PackageReference Include="Zenith.NET.Extensions.Slang" />
         <PackageReference Include="Zenith.NET.Metal" />
         <PackageReference Include="Zenith.NET.Views" />
         <PackageReference Include="Zenith.NET.Vulkan" />
