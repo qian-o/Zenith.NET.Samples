@@ -13,7 +13,8 @@
         <viewmodels:MainViewModel />
     </ContentPage.BindingContext>
 
-    <Grid SafeAreaEdges="None">
+    <Grid Background="Black"
+          SafeAreaEdges="None">
         <zenithmaui:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
             <zenithmaui:ZenithView.Behaviors>
                 <toolkit:EventToCommandBehavior x:DataType="viewmodels:MainViewModel"

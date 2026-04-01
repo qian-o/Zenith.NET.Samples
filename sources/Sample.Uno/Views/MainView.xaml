@@ -4,7 +4,7 @@
       xmlns:sample="using:Sample"
       xmlns:zenith="using:Zenith.NET.Views.WinUI">
 
-    <Grid>
+    <Grid Background="Black">
         <zenith:ZenithView GraphicsContext="{x:Bind sample:Renderer.Context}"
                            RenderRequested="{x:Bind ViewModel.RenderRequested}" />
 

@@ -30,6 +30,12 @@ static const float3 WHITE_COLOR = float3(0.73, 0.735, 0.73);
 static const float3 SPHERE_POS = float3(186.0, 248.0, 169.5);
 static const float SPHERE_RAD = 80.0;
 static const float SPHERE_IOR = 1.5;
+static const float NORMAL_EPSILON = 0.0002;
+static const float SHADOW_EPSILON = 0.02;
+static const float SURFACE_BIAS = 0.2;
+static const float MIN_DIST = 0.001;
+static const float LIGHT_SIZE = 25.0;
+static const float SOFT_SHADOW_WIDTH = 0.05;
 
 static const float3 CAM_POS = float3(278.0, 273.0, -801.4);
 static const float3 CAM_TARGET = float3(278.0, 274.4, 279.6);
@@ -131,7 +137,7 @@ float2 sdfScene(float3 p, bool includeGlass, float3 lightPos)
 
 float3 calcNormal(float3 p, bool includeGlass, float3 lightPos)
 {
-    float2 e = float2(0.0002, 0.0);
+    float2 e = float2(NORMAL_EPSILON, 0.0);
 
     return normalize(
         float3(sdfScene(p + e.xyy, includeGlass, lightPos).y - sdfScene(p - e.xyy, includeGlass, lightPos).y,
@@ -215,7 +221,7 @@ float calcGlassShadow(float3 ro, float3 rd, float3 sphPos, float sphRad)
 
 float calcCombinedShadow(float3 ro, float3 rd, float maxDist)
 {
-    float blockShadow = calcSoftShadow(ro, rd, 0.02, maxDist, 0.05);
+    float blockShadow = calcSoftShadow(ro, rd, SHADOW_EPSILON, maxDist, SOFT_SHADOW_WIDTH);
     float glassShadow = calcGlassShadow(ro, rd, SPHERE_POS, SPHERE_RAD);
 
     return blockShadow * glassShadow;
@@ -262,7 +268,6 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
 
     float3 albedo = getMaterialColor(id);
 
-    float lightSize = 25.0;
     float3 lp = lightPos;
 
     if (id == OBJ_CEILING)
@@ -270,11 +275,11 @@ float3 shade(float3 p, float3 n, float id, float3 lightPos)
         lp.y -= 550.0;
     }
 
-    lp.x = clamp(p.x, lp.x - lightSize, lp.x + lightSize);
-    lp.y = clamp(p.y, lp.y - lightSize, lp.y + lightSize);
+    lp.x = clamp(p.x, lp.x - LIGHT_SIZE, lp.x + LIGHT_SIZE);
+    lp.y = clamp(p.y, lp.y - LIGHT_SIZE, lp.y + LIGHT_SIZE);
 
     float3 L = normalize(lp - p);
-    float dist = length(lp - p);
+    float dist = max(length(lp - p), MIN_DIST);
     float atten = 0.5 / dist + 0.5 / (dist * dist);
     float NdotL = max(0.0, dot(n, L));
 
@@ -338,11 +343,11 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
     float fr = fresnel(cosI, SPHERE_IOR);
 
     float3 reflDir = reflect(rd, n);
-    float2 reflHit = raymarch(p + n * 0.2, reflDir, false, lightPos);
+    float2 reflHit = raymarch(p + n * SURFACE_BIAS, reflDir, false, lightPos);
 
     if (reflHit.x > 0.0)
     {
-        float3 rp = p + n * 0.2 + reflDir * reflHit.y;
+        float3 rp = p + n * SURFACE_BIAS + reflDir * reflHit.y;
 
         if (rp.z >= 0.0)
         {
@@ -355,22 +360,22 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
 
     if (dot(refrDir, refrDir) > 0.01)
     {
-        float3 startP = p - n * 0.2;
+        float3 startP = p - n * SURFACE_BIAS;
         float tNear, tFar;
 
         if (intersectSphere(startP, refrDir, tNear, tFar))
         {
-            float3 exitP = startP + refrDir * max(tFar, 0.1);
+            float3 exitP = startP + refrDir * max(tFar, SURFACE_BIAS * 0.5);
             float3 exitN = -normalize(exitP - SPHERE_POS);
             float3 exitDir = refract(refrDir, exitN, SPHERE_IOR);
 
             if (dot(exitDir, exitDir) > 0.01)
             {
-                float2 exitHit = raymarch(exitP - exitN * 0.2, exitDir, false, lightPos);
+                float2 exitHit = raymarch(exitP - exitN * SURFACE_BIAS, exitDir, false, lightPos);
 
                 if (exitHit.x > 0.0)
                 {
-                    float3 ep = exitP - exitN * 0.2 + exitDir * exitHit.y;
+                    float3 ep = exitP - exitN * SURFACE_BIAS + exitDir * exitHit.y;
 
                     if (ep.z >= 0.0)
                     {
@@ -382,11 +387,11 @@ float3 renderGlassSphere(float3 p, float3 rd, float3 lightPos)
             else
             {
                 float3 tirDir = reflect(refrDir, exitN);
-                float2 tirHit = raymarch(exitP + exitN * 0.2, tirDir, false, lightPos);
+                float2 tirHit = raymarch(exitP + exitN * SURFACE_BIAS, tirDir, false, lightPos);
 
                 if (tirHit.x > 0.0)
                 {
-                    float3 tp = exitP + exitN * 0.2 + tirDir * tirHit.y;
+                    float3 tp = exitP + exitN * SURFACE_BIAS + tirDir * tirHit.y;
 
                     if (tp.z >= 0.0)
                     {

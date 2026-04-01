@@ -1,4 +1,6 @@
 ﻿// Usage: dotnet script CompileShaders.csx
+// Recommended when DirectX12 initialization is inconsistent:
+//   dotnet script --no-cache CompileShaders.csx
 // Or run from the Shaders directory directly.
 //
 // Prerequisites:
@@ -59,7 +61,8 @@ foreach (var (name, extension, factory) in backends)
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[{name}] Skipped - backend not available on this platform: {ex.Message}");
+        Console.WriteLine($"[{name}] Skipped - backend not available on this platform.");
+        Console.WriteLine(ex);
         Console.WriteLine();
 
         continue;

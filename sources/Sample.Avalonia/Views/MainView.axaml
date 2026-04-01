@@ -15,7 +15,7 @@
         <viewmodels:MainViewModel />
     </UserControl.DataContext>
 
-    <Grid>
+    <Grid Background="Black">
         <zenith:ZenithView GraphicsContext="{x:Static sample:Renderer.Context}">
             <Interaction.Behaviors>
                 <EventTrigger EventName="RenderRequested">

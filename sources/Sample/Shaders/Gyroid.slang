@@ -13,8 +13,8 @@ static const float PI = 3.14159265359;
 static const float FAR = 30.0;
 static const float EPSILON = 0.001;
 static const int MAX_ITER = 150;
-
-static int m = 0;
+static const int MATERIAL_BLUE = 1;
+static const int MATERIAL_ORANGE = 2;
 
 float2x2 rot(float a)
 {
@@ -34,37 +34,38 @@ float gyroid(float3 p)
     return dot(cos(p), sin(p.zxy)) + 1.0;
 }
 
-float map(float3 p)
+float2 mapScene(float3 p)
 {
-    float r = 1e5, d;
+    float2 res = float2(1e5, 0.0);
 
-    d = gyroid(p);
-    if (d < r)
+    float d = gyroid(p);
+    if (d < res.x)
     {
-        r = d;
-        m = 1;
+        res = float2(d, MATERIAL_BLUE);
     }
 
     d = gyroid(p - float3(0, 0, PI));
-    if (d < r)
+    if (d < res.x)
     {
-        r = d;
-        m = 2;
+        res = float2(d, MATERIAL_ORANGE);
     }
 
-    return r;
+    return res;
 }
 
-float raymarch(float3 ro, float3 rd)
+float raymarch(float3 ro, float3 rd, out int materialId)
 {
     float t = 0.0;
+    materialId = 0;
 
     for (int i = 0; i < MAX_ITER; i++)
     {
-        float d = map(ro + rd * t);
+        float2 scene = mapScene(ro + rd * t);
+        float d = scene.x;
 
         if (abs(d) < EPSILON)
         {
+            materialId = int(scene.y);
             break;
         }
 
@@ -72,6 +73,7 @@ float raymarch(float3 ro, float3 rd)
 
         if (t > FAR)
         {
+            materialId = 0;
             break;
         }
     }
@@ -86,7 +88,7 @@ float getAO(float3 p, float3 sn)
     for (float i = 0.0; i < 4.0; i++)
     {
         float t = i * 0.08;
-        float d = map(p + sn * t);
+        float d = mapScene(p + sn * t).x;
 
         occ += t - d;
     }
@@ -98,7 +100,7 @@ float3 getNormal(float3 p)
 {
     float2 e = float2(0.5773, -0.5773) * 0.001;
 
-    return normalize(e.xyy * map(p + e.xyy) + e.yyx * map(p + e.yyx) + e.yxy * map(p + e.yxy) + e.xxx * map(p + e.xxx));
+    return normalize(e.xyy * mapScene(p + e.xyy).x + e.yyx * mapScene(p + e.yyx).x + e.yxy * mapScene(p + e.yxy).x + e.xxx * mapScene(p + e.xxx).x);
 }
 
 float3 trace(float3 ro, float3 rd)
@@ -108,9 +110,10 @@ float3 trace(float3 ro, float3 rd)
 
     for (int bounce = 0; bounce < 2; bounce++)
     {
-        float d = raymarch(ro, rd);
+        int materialId = 0;
+        float d = raymarch(ro, rd, materialId);
 
-        if (d > FAR)
+        if (d > FAR || materialId == 0)
         {
             break;
         }
@@ -125,11 +128,12 @@ float3 trace(float3 ro, float3 rd)
         float3 lp = float3(10.0, -10.0, -10.0 + ro.z);
         float3 ld = normalize(lp - p);
         float diff = max(0.0, 0.5 + 2.0 * dot(sn, ld));
-        float diff2 = pow(length(sin(sn * 2.0) * 0.5 + 0.5), 2.0);
+        float3 detail = sin(sn * 2.0) * 0.5 + 0.5;
+        float diff2 = dot(detail, detail);
         float diff3 = max(0.0, 0.5 + 0.5 * dot(sn, float3(0.0, 1.0, 0.0)));
 
         float spec = max(0.0, dot(reflect(-ld, sn), -rd));
-        float fres = 1.0 - max(0.0, dot(-rd, sn));
+        float fres = saturate(1.0 - max(0.0, dot(-rd, sn)));
         float3 col = float3(0.0, 0.0, 0.0);
         float3 alb = float3(0.0, 0.0, 0.0);
 
@@ -140,13 +144,13 @@ float3 trace(float3 ro, float3 rd)
 
         float freck = dot(cos(p * 23.0), float3(1.0, 1.0, 1.0));
 
-        if (m == 1)
+        if (materialId == MATERIAL_BLUE)
         {
             alb = float3(0.2, 0.1, 0.9);
             alb *= max(0.6, step(2.5, freck));
         }
 
-        if (m == 2)
+        if (materialId == MATERIAL_ORANGE)
         {
             alb = float3(0.6, 0.3, 0.1);
             alb *= max(0.8, step(-2.5, freck));
@@ -158,7 +162,7 @@ float3 trace(float3 ro, float3 rd)
 
         rd = reflect(rd, sn);
         ro = p + sn * 0.01;
-        throughput *= 0.9 * pow(fres, 1.0);
+        throughput *= 0.9 * fres;
     }
 
     return color;
