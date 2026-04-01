@@ -25,7 +25,7 @@ public static unsafe class Renderer
         {
             Context = GraphicsContext.CreateDirectX12(true);
         }
-        else if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst())
+        else if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst() || OperatingSystem.IsMacOS())
         {
             Context = GraphicsContext.CreateMetal(true);
         }
