@@ -22,6 +22,6 @@ public partial class Form1 : Form
             comboBox.SelectedIndex = 0;
         }
 
-        Renderer.Render(Renderer.Samples[comboBox.SelectedIndex], e.TotalSeconds, e.FrameBuffer);
+        Renderer.Render(Renderer.Samples[comboBox.SelectedIndex], e.TotalSeconds, e.CommandBuffer, e.Drawable);
     }
 }

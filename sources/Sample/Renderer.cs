@@ -1,10 +1,17 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Zenith.NET;
-using Zenith.NET.DirectX12;
-using Zenith.NET.Metal;
 using Zenith.NET.Views;
+#if !ANDROID && !IOS && !MACCATALYST
+using Zenith.NET.DirectX12;
+#endif
+#if !ANDROID
+using Zenith.NET.Metal;
+#endif
+#if !IOS && !MACCATALYST
 using Zenith.NET.Vulkan;
+#endif
 using Buffer = Zenith.NET.Buffer;
 
 namespace Sample;
@@ -16,11 +23,14 @@ public static unsafe class Renderer
     private static Buffer vertexsBuffer = null!;
     private static Buffer indicesBuffer = null!;
     private static Buffer constantsBuffer = null!;
-    private static ResourceLayout resourceLayout = null!;
-    private static ResourceTable resourceTable = null!;
 
     static Renderer()
     {
+    #if ANDROID
+        Context = GraphicsContext.CreateVulkan(true);
+    #elif IOS || MACCATALYST
+        Context = GraphicsContext.CreateMetal(true);
+    #else
         if (OperatingSystem.IsWindows())
         {
             Context = GraphicsContext.CreateDirectX12(true);
@@ -33,11 +43,12 @@ public static unsafe class Renderer
         {
             Context = GraphicsContext.CreateVulkan(true);
         }
+#endif
 
-        Context.ValidationMessage += static (sender, args) =>
+        Context.ValidationMessage += static (_, args) =>
         {
-            Debug.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
-            Console.WriteLine($"[{args.Source} - {args.Severity}] {args.Message}");
+            Debug.WriteLine($"[{args.Severity}] {args.Message}");
+            Console.WriteLine($"[{args.Severity}] {args.Message}");
         };
     }
 
@@ -53,8 +64,6 @@ public static unsafe class Renderer
         }
         pipelines.Clear();
 
-        resourceTable?.Dispose();
-        resourceLayout?.Dispose();
         constantsBuffer?.Dispose();
         vertexsBuffer?.Dispose();
         indicesBuffer?.Dispose();
@@ -77,61 +86,79 @@ public static unsafe class Renderer
         {
             SizeInBytes = (uint)(sizeof(float) * vertices.Length),
             StrideInBytes = sizeof(float) * 4,
-            Flags = BufferUsageFlags.Vertex
+            Usages = BufferUsages.Vertex,
+            Residency = MemoryResidency.CpuWriteOnly
         });
-        vertexsBuffer.Upload(vertices, 0);
+
+        fixed (float* pointer = vertices)
+        {
+            vertexsBuffer.Upload(0, new()
+            {
+                Pointer = (nint)pointer,
+                SizeInBytes = (uint)(sizeof(float) * vertices.Length)
+            });
+        }
 
         indicesBuffer = Context.CreateBuffer(new()
         {
             SizeInBytes = (uint)(sizeof(uint) * indices.Length),
             StrideInBytes = sizeof(uint),
-            Flags = BufferUsageFlags.Index
+            Usages = BufferUsages.Index,
+            Residency = MemoryResidency.CpuWriteOnly
         });
-        indicesBuffer.Upload(indices, 0);
+
+        fixed (uint* pointer = indices)
+        {
+            indicesBuffer.Upload(0, new()
+            {
+                Pointer = (nint)pointer,
+                SizeInBytes = (uint)(sizeof(uint) * indices.Length)
+            });
+        }
 
         constantsBuffer = Context.CreateBuffer(new()
         {
             SizeInBytes = (uint)sizeof(Constants),
             StrideInBytes = (uint)sizeof(Constants),
-            Flags = BufferUsageFlags.Constant | BufferUsageFlags.MapWrite
+            Usages = BufferUsages.Constant,
+            Residency = MemoryResidency.CpuWriteOnly
         });
 
-        resourceLayout = Context.CreateResourceLayout(new() { Bindings = [new() { Type = ResourceType.ConstantBuffer, Index = 0, Count = 1, StageFlags = ShaderStageFlags.Pixel }] });
-        resourceTable = Context.CreateResourceTable(new() { Layout = resourceLayout, Resources = [constantsBuffer] });
-
-        using Shader vs = Shader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain", ShaderStageFlags.Vertex);
+        using Shader vertexShader = LoadShader(FileAccessService.CombinePaths("Shaders", "Common", "Fullscreen.slang"), "VSMain");
 
         foreach (string file in FileAccessService.GetFiles("Shaders"))
         {
             if (file.EndsWith(".slang"))
             {
-                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(vs, file);
+                pipelines[Path.GetFileNameWithoutExtension(file)] = CreateGraphicsPipeline(vertexShader, file);
             }
         }
     }
 
-    public static void Render(string sample, double totalSeconds, FrameBuffer frameBuffer)
+    public static void Render(string sample, double totalSeconds, CommandBuffer commandBuffer, Texture drawable)
     {
         Constants constants = new()
         {
-            Resolution = new(frameBuffer.Width, frameBuffer.Height),
+            Resolution = new(drawable.Desc.Width, drawable.Desc.Height),
             TotalSeconds = (float)totalSeconds
         };
 
-        constantsBuffer.Upload([constants], 0);
+        constantsBuffer.Upload(0, new()
+        {
+            Pointer = (nint)(&constants),
+            SizeInBytes = (uint)sizeof(Constants)
+        });
 
-        CommandBuffer commandBuffer = Context.Graphics.CommandBuffer();
+        commandBuffer.BeginRenderPass([ColorAttachment.Clear(drawable, Vector4.Zero)], null);
 
         commandBuffer.SetPipeline(pipelines[sample]);
         commandBuffer.SetVertexBuffer(vertexsBuffer, 0, 0);
         commandBuffer.SetIndexBuffer(indicesBuffer, 0, IndexFormat.UInt32);
-        commandBuffer.SetResourceTable(resourceTable);
+        commandBuffer.SetConstantBuffer(constantsBuffer, 0);
 
-        commandBuffer.BeginRenderPass(frameBuffer, ClearValues.Default, resourceTable);
         commandBuffer.DrawIndexed(6, 1, 0, 0, 0);
-        commandBuffer.EndRenderPass();
 
-        commandBuffer.Submit(true);
+        commandBuffer.EndRenderPass();
     }
 
     public static void Destroy()
@@ -142,8 +169,6 @@ public static unsafe class Renderer
         }
         pipelines.Clear();
 
-        resourceTable?.Dispose();
-        resourceLayout?.Dispose();
         constantsBuffer?.Dispose();
         vertexsBuffer?.Dispose();
         indicesBuffer?.Dispose();
@@ -151,9 +176,9 @@ public static unsafe class Renderer
         Context.Dispose();
     }
 
-    private static GraphicsPipeline CreateGraphicsPipeline(Shader vs, string file)
+    private static GraphicsPipeline CreateGraphicsPipeline(Shader vertexShader, string file)
     {
-        using Shader ps = Shader(file, "PSMain", ShaderStageFlags.Pixel);
+        using Shader fragmentShader = LoadShader(file, "PSMain");
 
         InputLayout inputLayout = new();
         inputLayout.Add(new() { Format = ElementFormat.Float2, Semantic = ElementSemantic.Position });
@@ -161,35 +186,40 @@ public static unsafe class Renderer
 
         return Context.CreateGraphicsPipeline(new()
         {
-            RenderStates = new()
-            {
-                RasterizerState = RasterizerStates.Default,
-                DepthStencilState = DepthStencilStates.Default,
-                BlendState = BlendStates.Default
-            },
-            Vertex = vs,
-            Pixel = ps,
-            ResourceLayout = resourceLayout,
+            VertexShader = vertexShader,
+            FragmentShader = fragmentShader,
             InputLayouts = [inputLayout],
             PrimitiveTopology = PrimitiveTopology.TriangleList,
-            Output = ZenithViewHelper.Output
+            AttachmentFormats = new()
+            {
+                ColorFormats = [ZenithViewHelper.DrawableFormat],
+                SampleCount = SampleCount.Count1
+            },
+            RenderState = new()
+            {
+                Rasterizer = RasterizerState.CullNone(),
+                DepthStencil = DepthStencilState.DepthNone(),
+                Blend = BlendState.Opaque()
+            }
         });
     }
 
-    private static Shader Shader(string file, string entryPoint, ShaderStageFlags stage)
+    private static Shader LoadShader(string file, string name)
     {
         return Context.CreateShader(new()
         {
-            ShaderBytes = FileAccessService.ReadAllBytes(Path.ChangeExtension(file, $".{Context.Backend.ToString().ToLower()}")),
-            EntryPoint = entryPoint,
-            Stage = stage
+            Name = name,
+            CodeBytes = FileAccessService.ReadAllBytes(Path.ChangeExtension(file, $".{Context.GraphicsApi.ToString().ToLower()}"))
         });
     }
 }
 
+[StructLayout(LayoutKind.Explicit, Size = 16)]
 file struct Constants
 {
+    [FieldOffset(0)]
     public Vector2 Resolution;
 
+    [FieldOffset(8)]
     public float TotalSeconds;
 }

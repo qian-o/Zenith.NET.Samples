@@ -7,7 +7,7 @@
 import "Common/Constants";
 import "Common/Vertex";
 
-uniform Constants constants;
+ConstantBuffer<Constants> constants;
 
 static const float PI = 3.141592654;
 static const float ROTATION_SPEED = 0.25;
@@ -488,6 +488,7 @@ float3 effect(float2 p)
     return sqrt(color);
 }
 
+[shader("fragment")]
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float2 q = input.UV;

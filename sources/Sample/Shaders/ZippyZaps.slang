@@ -7,7 +7,7 @@
 import "Common/Constants";
 import "Common/Vertex";
 
-uniform Constants constants;
+ConstantBuffer<Constants> constants;
 
 static const float4 COLOR_SHIFT = float4(1.0, 2.0, 3.0, 0.0);
 static const float4 COLOR_ROTATION_PHASE = float4(COLOR_SHIFT.w, COLOR_SHIFT.x, COLOR_SHIFT.z, COLOR_SHIFT.w) * 11.0;
@@ -23,6 +23,7 @@ float safeRcp(float value, float epsilon)
     return 1.0 / value;
 }
 
+[shader("fragment")]
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float2 res = constants.Resolution;

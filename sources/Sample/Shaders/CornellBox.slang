@@ -1,7 +1,7 @@
 ﻿import "Common/Constants";
 import "Common/Vertex";
 
-uniform Constants constants;
+ConstantBuffer<Constants> constants;
 
 static const float PI = 3.14159265359;
 static const float EPSILON = 0.001;
@@ -446,6 +446,7 @@ float3 setupCamera(float3 ro, float3 rd)
     return rd;
 }
 
+[shader("fragment")]
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float2 resolution = constants.Resolution;

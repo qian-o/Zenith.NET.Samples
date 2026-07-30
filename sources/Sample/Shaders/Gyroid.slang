@@ -7,7 +7,7 @@
 import "Common/Constants";
 import "Common/Vertex";
 
-uniform Constants constants;
+ConstantBuffer<Constants> constants;
 
 static const float PI = 3.14159265359;
 static const float FAR = 30.0;
@@ -168,6 +168,7 @@ float3 trace(float3 ro, float3 rd)
     return color;
 }
 
+[shader("fragment")]
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float2 resolution = constants.Resolution;

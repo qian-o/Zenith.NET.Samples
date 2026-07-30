@@ -9,7 +9,7 @@
 import "Common/Constants";
 import "Common/Vertex";
 
-uniform Constants constants;
+ConstantBuffer<Constants> constants;
 
 static const float PI = 3.14159265359;
 static const float TAU = PI * 2.0;
@@ -20,6 +20,7 @@ float wrap(float x, float period)
     return x - period * floor(x / period);
 }
 
+[shader("fragment")]
 float4 PSMain(Vertex input) : SV_TARGET
 {
     float4 color = float4(0.0, 0.0, 0.0, 0.0);

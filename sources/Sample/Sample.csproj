@@ -11,10 +11,21 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Zenith.NET.Views" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == '$(StandardTargetFramework)'">
         <PackageReference Include="Zenith.NET.DirectX12" />
         <PackageReference Include="Zenith.NET.Metal" />
-        <PackageReference Include="Zenith.NET.Views" />
         <PackageReference Include="Zenith.NET.Vulkan" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <PackageReference Include="Zenith.NET.Vulkan" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' Or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+        <PackageReference Include="Zenith.NET.Metal" />
     </ItemGroup>
 
 </Project>

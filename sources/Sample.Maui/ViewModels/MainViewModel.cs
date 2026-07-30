@@ -14,7 +14,7 @@ public partial class MainViewModel : ObservableRecipient
     {
         if (!string.IsNullOrEmpty(Sample))
         {
-            Renderer.Render(Sample, args.TotalSeconds, args.FrameBuffer);
+            Renderer.Render(Sample, args.TotalSeconds, args.CommandBuffer, args.Drawable);
         }
     }
 }

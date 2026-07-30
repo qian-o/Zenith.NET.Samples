@@ -3,16 +3,9 @@
 // Run:
 //   dotnet script --no-cache CompileShaders.csx
 
-#r "nuget: Zenith.NET.DirectX12, 0.0.7"
-#r "nuget: Zenith.NET.Vulkan, 0.0.7"
-#r "nuget: Zenith.NET.Metal, 0.0.7"
-#r "nuget: Zenith.NET.Extensions.Slang, 0.0.7"
+#r "nuget: Zenith.NET, 1.0.0-rc"
 
 using Zenith.NET;
-using Zenith.NET.DirectX12;
-using Zenith.NET.Vulkan;
-using Zenith.NET.Metal;
-using Zenith.NET.Extensions.Slang;
 
 string shadersDir = Path.GetDirectoryName(Path.GetFullPath("CompileShaders.csx"))!;
 
@@ -36,69 +29,31 @@ Console.WriteLine();
 
 string fullscreenPath = Path.Combine(shadersDir, "Common", "Fullscreen.slang");
 
-// Define backends to compile for.
-// Each entry: (backend name, file extension, context factory)
-(string Name, string Extension, Func<GraphicsContext> Factory)[] backends =
+(GraphicsApi Api, string Extension)[] backends =
 [
-    ("DirectX12", "directx12", () => GraphicsContext.CreateDirectX12(true)),
-    ("Vulkan",    "vulkan",    () => GraphicsContext.CreateVulkan(true)),
-    ("Metal",     "metal",     () => GraphicsContext.CreateMetal(true)),
+    (GraphicsApi.DirectX12, "directx12"),
+    (GraphicsApi.Vulkan, "vulkan"),
+    (GraphicsApi.Metal, "metal")
 ];
 
-foreach (var (name, extension, factory) in backends)
+foreach ((GraphicsApi graphicsApi, string extension) in backends)
 {
-    GraphicsContext context = null;
+    Console.WriteLine($"[{graphicsApi}] Compiling shaders...");
 
-    try
+    ShaderDesc vertexShader = ZenithCompiler.CompileFromFile(graphicsApi, fullscreenPath, "VSMain", [shadersDir]);
+    string vertexOutput = Path.Combine(shadersDir, "Common", $"Fullscreen.{extension}");
+    File.WriteAllBytes(vertexOutput, vertexShader.CodeBytes);
+
+    foreach (string slangFile in slangFiles)
     {
-        context = factory();
-    }
-    catch
-    {
-        Console.WriteLine($"[{name}] Skipped - backend not available on this platform.");
-        Console.WriteLine();
+        ShaderDesc fragmentShader = ZenithCompiler.CompileFromFile(graphicsApi, slangFile, "PSMain", [shadersDir]);
+        string fragmentOutput = Path.ChangeExtension(slangFile, $".{extension}");
+        File.WriteAllBytes(fragmentOutput, fragmentShader.CodeBytes);
 
-        continue;
-    }
-
-    Console.WriteLine($"[{name}] Compiling shaders...");
-
-    try
-    {
-        // Compile the shared vertex shader.
-        using Shader vs = context.LoadShaderFromFile(fullscreenPath, "VSMain", ShaderStageFlags.Vertex);
-
-        foreach (string slangFile in slangFiles)
-        {
-            string fileName = Path.GetFileNameWithoutExtension(slangFile);
-
-            try
-            {
-                // Compile the pixel shader.
-                using Shader ps = context.LoadShaderFromFile(slangFile, "PSMain", ShaderStageFlags.Pixel);
-
-                // Write compiled vertex shader bytes.
-                string vsOutput = Path.Combine(shadersDir, "Common", $"Fullscreen.{extension}");
-                File.WriteAllBytes(vsOutput, vs.Desc.ShaderBytes);
-
-                // Write compiled pixel shader bytes.
-                string psOutput = Path.ChangeExtension(slangFile, $".{extension}");
-                File.WriteAllBytes(psOutput, ps.Desc.ShaderBytes);
-
-                Console.WriteLine($"  [{name}] {fileName} -> {Path.GetFileName(psOutput)}");
-            }
-            catch
-            {
-                Console.WriteLine($"  [{name}] {fileName} FAILED.");
-            }
-        }
-    }
-    finally
-    {
-        context.Dispose();
+        Console.WriteLine($"  [{graphicsApi}] {Path.GetFileNameWithoutExtension(slangFile)} -> {Path.GetFileName(fragmentOutput)}");
     }
 
-    Console.WriteLine($"[{name}] Done.");
+    Console.WriteLine($"[{graphicsApi}] Done.");
     Console.WriteLine();
 }
 
