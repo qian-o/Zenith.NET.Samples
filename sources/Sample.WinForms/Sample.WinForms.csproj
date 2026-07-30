@@ -8,10 +8,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Sample\Sample.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Zenith.NET.Views.WinForms" />
+        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.WinForms\Zenith.NET.Views.WinForms.csproj" />
     </ItemGroup>
 
 </Project>
