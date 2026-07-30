@@ -2,16 +2,10 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Zenith.NET;
-using Zenith.NET.Views;
-#if !ANDROID && !IOS && !MACCATALYST
 using Zenith.NET.DirectX12;
-#endif
-#if !ANDROID
 using Zenith.NET.Metal;
-#endif
-#if !IOS && !MACCATALYST
+using Zenith.NET.Views;
 using Zenith.NET.Vulkan;
-#endif
 using Buffer = Zenith.NET.Buffer;
 
 namespace Sample;
@@ -26,11 +20,6 @@ public static unsafe class Renderer
 
     static Renderer()
     {
-    #if ANDROID
-        Context = GraphicsContext.CreateVulkan(true);
-    #elif IOS || MACCATALYST
-        Context = GraphicsContext.CreateMetal(true);
-    #else
         if (OperatingSystem.IsWindows())
         {
             Context = GraphicsContext.CreateDirectX12(true);
@@ -43,7 +32,6 @@ public static unsafe class Renderer
         {
             Context = GraphicsContext.CreateVulkan(true);
         }
-#endif
 
         Context.ValidationMessage += static (_, args) =>
         {
