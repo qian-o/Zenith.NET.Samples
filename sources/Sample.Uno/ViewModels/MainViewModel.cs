@@ -6,7 +6,7 @@ namespace Sample.Uno.ViewModels;
 public partial class MainViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    private string sample = Renderer.Samples.FirstOrDefault() ?? string.Empty;
+    public partial string Sample { get; set; } = Renderer.Samples.FirstOrDefault() ?? string.Empty;
 
     public void RenderRequested(object? sender, RenderEventArgs e)
     {
