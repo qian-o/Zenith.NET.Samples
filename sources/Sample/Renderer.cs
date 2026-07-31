@@ -2,11 +2,16 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Zenith.NET;
-using Zenith.NET.DirectX12;
-using Zenith.NET.Metal;
 using Zenith.NET.Views;
-using Zenith.NET.Vulkan;
 using Buffer = Zenith.NET.Buffer;
+
+#if ANDROID
+using Zenith.NET.Vulkan;
+#elif IOS || MACCATALYST
+using Zenith.NET.Metal;
+#else
+using Zenith.NET.DirectX12;
+#endif
 
 namespace Sample;
 
@@ -20,19 +25,13 @@ public static unsafe class Renderer
 
     static Renderer()
     {
-        if (OperatingSystem.IsWindows())
-        {
-            Context = GraphicsContext.CreateDirectX12(true);
-        }
-        else if (OperatingSystem.IsIOS() || OperatingSystem.IsMacCatalyst() || OperatingSystem.IsMacOS())
-        {
-            Context = GraphicsContext.CreateMetal(true);
-        }
-        else
-        {
-            Context = GraphicsContext.CreateVulkan(true);
-        }
-
+#if ANDROID
+        Context = GraphicsContext.CreateVulkan(true);
+#elif IOS || MACCATALYST
+        Context = GraphicsContext.CreateMetal(true);
+#else
+        Context = GraphicsContext.CreateDirectX12(true);
+#endif
         Context.ValidationMessage += static (_, args) =>
         {
             Debug.WriteLine($"[{args.Severity}] {args.Message}");
