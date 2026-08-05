@@ -10,7 +10,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Sample\Sample.csproj" />
-        <ProjectReference Include="..\..\..\Zenith.NET\sources\Views\Zenith.NET.Views.Avalonia\Zenith.NET.Views.Avalonia.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -21,6 +20,7 @@
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Xaml.Behaviors.Avalonia" />
+        <PackageReference Include="Zenith.NET.Views.Avalonia" />
     </ItemGroup>
 
 </Project>
