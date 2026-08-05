@@ -3,7 +3,7 @@
 // Run:
 //   dotnet script --no-cache CompileShaders.csx
 
-#r "nuget: Zenith.NET, 1.0.0-rc"
+#r "nuget: Zenith.NET, 1.0.0"
 
 using Zenith.NET;
 
