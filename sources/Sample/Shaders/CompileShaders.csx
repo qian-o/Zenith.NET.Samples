@@ -7,50 +7,64 @@
 
 using Zenith.NET;
 
-string shadersDir = Path.GetDirectoryName(Path.GetFullPath("CompileShaders.csx"))!;
+string shaderDirectory = Path.GetDirectoryName(Path.GetFullPath("CompileShaders.csx"))!;
 
-string[] slangFiles = Directory.GetFiles(shadersDir, "*.slang", SearchOption.TopDirectoryOnly);
+string[] shaderFiles = Directory.GetFiles(shaderDirectory, "*.slang", SearchOption.TopDirectoryOnly);
 
-if (slangFiles.Length is 0)
+if (shaderFiles.Length is 0)
 {
     Console.WriteLine("No .slang files found in the Shaders directory.");
 
     return;
 }
 
-Console.WriteLine($"Found {slangFiles.Length} shader(s) to compile:");
+Console.WriteLine($"Found {shaderFiles.Length} shader(s) to compile:");
 
-foreach (string file in slangFiles)
+foreach (string shaderFile in shaderFiles)
 {
-    Console.WriteLine($"  - {Path.GetFileName(file)}");
+    Console.WriteLine($"  - {Path.GetFileName(shaderFile)}");
 }
 
 Console.WriteLine();
 
-string fullscreenPath = Path.Combine(shadersDir, "Common", "Fullscreen.slang");
+string fullscreenShaderPath = Path.Combine(shaderDirectory, "Common", "Fullscreen.slang");
 
-(GraphicsApi Api, string Extension)[] backends =
+GraphicsApi[] graphicsApis =
 [
-    (GraphicsApi.DirectX12, "directx12"),
-    (GraphicsApi.Vulkan, "vulkan"),
-    (GraphicsApi.Metal, "metal")
+    GraphicsApi.DirectX12,
+    GraphicsApi.Metal,
+    GraphicsApi.Vulkan
 ];
 
-foreach ((GraphicsApi graphicsApi, string extension) in backends)
+foreach (GraphicsApi graphicsApi in graphicsApis)
 {
     Console.WriteLine($"[{graphicsApi}] Compiling shaders...");
 
-    ShaderDesc vertexShader = ZenithCompiler.CompileFromFile(graphicsApi, fullscreenPath, "VSMain", [shadersDir]);
-    string vertexOutput = Path.Combine(shadersDir, "Common", $"Fullscreen.{extension}");
-    File.WriteAllBytes(vertexOutput, vertexShader.CodeBytes);
+    string extension = graphicsApi.ToString().ToLowerInvariant();
+    ShaderDesc vertexShader;
 
-    foreach (string slangFile in slangFiles)
+    try
     {
-        ShaderDesc fragmentShader = ZenithCompiler.CompileFromFile(graphicsApi, slangFile, "PSMain", [shadersDir]);
-        string fragmentOutput = Path.ChangeExtension(slangFile, $".{extension}");
-        File.WriteAllBytes(fragmentOutput, fragmentShader.CodeBytes);
+        vertexShader = ZenithCompiler.CompileFromFile(graphicsApi, fullscreenShaderPath, "VSMain", [shaderDirectory]);
+    }
+    catch (Exception exception) when (IsCompilerUnavailable(exception))
+    {
+        Console.WriteLine($"[{graphicsApi}] Skipped: required compiler is unavailable in this environment.");
+        Console.WriteLine();
 
-        Console.WriteLine($"  [{graphicsApi}] {Path.GetFileNameWithoutExtension(slangFile)} -> {Path.GetFileName(fragmentOutput)}");
+        continue;
+    }
+
+    string vertexShaderOutput = Path.Combine(shaderDirectory, "Common", $"Fullscreen.{extension}");
+    File.WriteAllBytes(vertexShaderOutput, vertexShader.CodeBytes);
+
+    foreach (string shaderFile in shaderFiles)
+    {
+        ShaderDesc fragmentShader = ZenithCompiler.CompileFromFile(graphicsApi, shaderFile, "PSMain", [shaderDirectory]);
+        string fragmentShaderOutput = Path.ChangeExtension(shaderFile, $".{extension}");
+        File.WriteAllBytes(fragmentShaderOutput, fragmentShader.CodeBytes);
+
+        Console.WriteLine($"  [{graphicsApi}] {Path.GetFileNameWithoutExtension(shaderFile)} -> {Path.GetFileName(fragmentShaderOutput)}");
     }
 
     Console.WriteLine($"[{graphicsApi}] Done.");
@@ -58,3 +72,23 @@ foreach ((GraphicsApi graphicsApi, string extension) in backends)
 }
 
 Console.WriteLine("Shader compilation complete.");
+
+static bool IsCompilerUnavailable(Exception exception)
+{
+    for (Exception currentException = exception; currentException is not null; currentException = currentException.InnerException)
+    {
+        if (currentException is DllNotFoundException or PlatformNotSupportedException)
+        {
+            return true;
+        }
+
+        if (currentException.Message.Contains("failed to load downstream compiler", StringComparison.OrdinalIgnoreCase) ||
+            currentException.Message.Contains("pass-through compiler not found", StringComparison.OrdinalIgnoreCase) ||
+            currentException.Message.Contains("failed to load dynamic library", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
